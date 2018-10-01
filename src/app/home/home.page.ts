@@ -60,10 +60,9 @@ export class HomePage implements OnInit {
 	xRef: any;
 	yRef: any;
 	pointRefs: any;
-  esriPoint: esri.PointConstructor;
-  esriGraphic: esri.GraphicConstructor;
+	esriPoint: esri.PointConstructor;
+	esriGraphic: esri.GraphicConstructor;
 
-  
 	constructor(private esriGeocodeService: EsriGeocodeService) {
 		this.initLocation();
 	}
@@ -137,19 +136,18 @@ export class HomePage implements OnInit {
 					this.originInput = res['candidates'][0]['attributes']['LongLabel'];
 					this.xRef = res['candidates'][0]['location']['x'];
 					this.yRef = res['candidates'][0]['location']['y'];
-          this.pointRefs = [ this.yRef, this.xRef ];
-          // this.drawPoint([res['candidates'][0]['location']['y'], res['candidates'][0]['location']['x']], "origin")
-          // this.esriMapView.graphics.add(this.pointRefs)
+					this.pointRefs = [ this.yRef, this.xRef ];
+					// this.drawPoint([res['candidates'][0]['location']['y'], res['candidates'][0]['location']['x']], "origin")
+					// this.esriMapView.graphics.add(this.pointRefs)
 					// this.setRoutePointOrigin(this.pointRefs);
-          console.log('pointrefs', this.pointRefs);
-          this.drawPoint(this.pointRefs, "origin")
+					console.log('pointrefs', this.pointRefs);
+					this.drawPoint(this.pointRefs, 'origin');
 				} else {
 					this.listDestinationLocationSuggestion = null;
 					this.destinationInput = res['candidates'][0]['attributes']['LongLabel'];
 					this.pointRefs = [ res['candidates'][0]['location']['y'], res['candidates'][0]['location']['x'] ];
-          // this.esriMapComponent.setRoutePointDestination(this.pointRefs);
-          this.drawPoint(this.pointRefs, "destination")
-          
+					// this.esriMapComponent.setRoutePointDestination(this.pointRefs);
+					this.drawPoint(this.pointRefs, 'destination');
 				}
 			},
 			(error) => {
@@ -191,115 +189,59 @@ export class HomePage implements OnInit {
 
 	async drawPoint(pointRefs: Array<number>, type) {
 		try {
-      const [
-        EsriGraphic,
-        EsriPoint 
-      ] = await loadModules([
-        'esri/Graphic',
-        'esri/geometry/Point'
-      ]);
-      if (type == 'origin') {
-        const pointOriginProperties: esri.PointProperties = {
-          longitude: pointRefs[0],
-          latitude: pointRefs[1]
-        }
-  
-        const pointOrigin: esri.Point = new EsriPoint(pointOriginProperties);
-  
-        const graphicOriginProperties: esri.GraphicProperties = {
-          symbol: {
-            type: "simple-marker",
-            color: "white",
-            size: "12px"
-        },
-          geometry: pointOrigin
-        }
-  
-        const graphicOrigin: esri.Graphic = new EsriGraphic(graphicOriginProperties);
-        console.log(graphicOrigin);
-        
-        // All resources in the MapView and the map have loaded.
-        // Now execute additional processes
-        this.esriMapView.graphics.add(graphicOrigin)
-      }
+			const [ EsriMap, EsriMapView, EsriGraphic, EsriPoint ] = await loadModules(['esri/Map', 'esri/views/MapView', 'esri/Graphic', 'esri/geometry/Point' ]);
+			if (type == 'origin') {
+				const pointOriginProperties: esri.PointProperties = {
+					longitude: pointRefs[0],
+					latitude: pointRefs[1]
+				};
+
+				const pointOrigin: esri.Point = new EsriPoint(pointOriginProperties);
+
+				const graphicOriginProperties: esri.GraphicProperties = {
+					symbol: {
+						type: 'simple-marker',
+						color: 'black',
+						size: '18px'
+					},
+					geometry: pointOrigin
+				};
+
+				const graphicOrigin: esri.Graphic = new EsriGraphic(graphicOriginProperties);
+				console.log(graphicOrigin);
+
+				// All resources in the MapView and the map have loaded.
+				// Now execute additional processes
+        this.esriMapView.graphics.add(graphicOrigin);
+        this.esriMapView.center
+      } 
       else {
-        const pointDestinationProperties: esri.PointProperties = {
-          longitude: pointRefs[0],
-          latitude: pointRefs[1]
-        }
-  
-        const pointDestination: esri.Point = new EsriPoint(pointDestinationProperties);
-  
-        const graphicDestinationProperties: esri.GraphicProperties = {
-          symbol: {
-            type: "simple-marker",
-            color: "black",
-            size: "12px"
-        },
-          geometry: pointDestination
-        }
-  
-        const graphicDestination: esri.Graphic = new EsriGraphic(graphicDestinationProperties);
-  
-        // All resources in the MapView and the map have loaded.
-        // Now execute additional processes
-        this.esriMapView.graphics.add(graphicDestination)
-      }
-      
+				const pointDestinationProperties: esri.PointProperties = {
+					longitude: pointRefs[0],
+					latitude: pointRefs[1]
+				};
+
+				const pointDestination: esri.Point = new EsriPoint(pointDestinationProperties);
+
+				const graphicDestinationProperties: esri.GraphicProperties = {
+					symbol: {
+						type: 'simple-marker',
+						color: 'black',
+						size: '12px'
+					},
+					geometry: pointDestination
+				};
+
+				const graphicDestination: esri.Graphic = new EsriGraphic(graphicDestinationProperties);
+
+				// All resources in the MapView and the map have loaded.
+				// Now execute additional processes
+				this.esriMapView.graphics.add(graphicDestination);
+			}
 		} catch (error) {
 			console.log('Error on Adding Graphic Origin: ' + error);
 		}
-  }
-  
-  drawGraphic(pointRefs, type) {
-    if (type == 'origin') {
-      const pointOriginProperties: esri.PointProperties = {
-        longitude: pointRefs[0],
-        latitude: pointRefs[1]
-      }
-      
-      const pointOrigin: esri.Point = new this.esriPoint(pointOriginProperties)
-
-      const graphicOriginProperties: esri.GraphicProperties = {
-        symbol: {
-          type: "simple-marker",
-          color: "white",
-          size: "12px"
-      },
-        geometry: pointOrigin
-      }
-
-      const graphicOrigin: esri.Graphic = new this.esriGraphic(graphicOriginProperties);
-      console.log("lalala", this.esriMapView);
-      
-      // All resources in the MapView and the map have loaded.
-      // Now execute additional processes
-      this.esriMapView.graphics.add(graphicOrigin)
-    }
-    else {
-      const pointDestinationProperties: esri.PointProperties = {
-        longitude: pointRefs[0],
-        latitude: pointRefs[1]
-      }
-
-      const pointDestination: esri.Point = new this.esriPoint(pointDestinationProperties);
-
-      const graphicDestinationProperties: esri.GraphicProperties = {
-        symbol: {
-          type: "simple-marker",
-          color: "black",
-          size: "12px"
-      },
-        geometry: pointDestination
-      }
-
-      const graphicDestination: esri.Graphic = new this.esriGraphic(graphicDestinationProperties);
-
-      // All resources in the MapView and the map have loaded.
-      // Now execute additional processes
-      this.esriMapView.graphics.add(graphicDestination)
-    }
-  }
+	}
 
 	ngOnInit() {
 		this.initializeMap();
