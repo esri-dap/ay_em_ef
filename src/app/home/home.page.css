@@ -25,6 +25,7 @@
     top: 50vh;
     text-align: start;
     z-index: 100;
+    overflow-y: auto;
 }
 
 .card-main h1 {

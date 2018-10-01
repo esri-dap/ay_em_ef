@@ -43,7 +43,7 @@
 
   <ion-card-content *ngIf="hasResult">
     <ion-list *ngFor="let route of routeData; let i = index;">
-      <list-route [angkaCuaca]="weatherData[i]?.condition" [textCuaca]="weatherData[i]?.text" [textRoute]="route.attributes.text">
+      <list-route [conditionWeather]="weatherData[i]?.condition" [textWeather]="weatherData[i]?.text" [textRoute]="route.attributes.text">
       </list-route>
     </ion-list>
   </ion-card-content>

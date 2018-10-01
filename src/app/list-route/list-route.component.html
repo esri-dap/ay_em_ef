@@ -20,11 +20,11 @@
 <ion-card>
     <ion-item>
         <ion-avatar slot="start">
-          <img src="./../../assets/icon/cuaca/101.png"/>
+          <img [src]="_conditionWeather"/>
         </ion-avatar>
         <ion-label text-wrap>
           <h3>{{_textRoute}}</h3>
-          <p>"Cerah Berawan"</p>
+          <p>{{_textWeather}}</p>
         </ion-label>
       </ion-item>
 </ion-card>

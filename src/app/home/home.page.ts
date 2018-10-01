@@ -40,7 +40,7 @@ export class HomePage implements OnInit {
   //   return this._zoom;
   // }
 
-  private _center: Array<number> = [ 106.802216, -6.218335];
+  private _center: Array<number> = [106.802216, -6.218335];
   // @Input()
   // set center(center: Array<number>) {
   //   this._center = center;
@@ -76,10 +76,10 @@ export class HomePage implements OnInit {
   isOrigin: boolean = true;
   hasResult: boolean = false;
 
-  titleController: string = "Where to Go?"
+  titleController: string = "Where to Go?";
 
-  weatherData: any = []
-  routeData: any
+  weatherData: any = [];
+  routeData: any;
 
   constructor(private esriGeocodeService: EsriGeocodeService) {
     this.initLocation();
@@ -100,13 +100,6 @@ export class HomePage implements OnInit {
         this.latitude = position.coords.latitude;
         this.longitude = position.coords.longitude;
         this._center = [longitude, latitude];
-        // this.locationCenter = [longitude,latitude]
-
-        // // Center map after it has been initialized
-        // if(this.mapView != null) {
-        //   console.log("Centering map: " + latitude + ", " + longitude);
-        //   this.mapView.center = [longitude, latitude];
-        // }
       },
       error => {
         switch (error.code) {
@@ -155,10 +148,6 @@ export class HomePage implements OnInit {
           this.xRef = res["candidates"][0]["location"]["x"];
           this.yRef = res["candidates"][0]["location"]["y"];
           this.pointRefs = [this.yRef, this.xRef];
-          // this.drawPoint([res['candidates'][0]['location']['y'], res['candidates'][0]['location']['x']], "origin")
-          // this.esriMapView.graphics.add(this.pointRefs)
-          // this.setRoutePointOrigin(this.pointRefs);
-          console.log("pointrefs", this.pointRefs);
           this.drawPoint(this.pointRefs, "origin");
           this.isOrigin = false;
         } else {
@@ -193,11 +182,14 @@ export class HomePage implements OnInit {
       };
 
       const trafficProperties: esri.MapImageLayerProperties = {
-        url: 'https://utility.arcgis.com/usrsvcs/appservices/XAtxezTwqMmmQ7r7/rest/services/World/Traffic/MapServer'
-      }
+        url:
+          "https://utility.arcgis.com/usrsvcs/appservices/XAtxezTwqMmmQ7r7/rest/services/World/Traffic/MapServer"
+      };
 
       const map: esri.Map = new EsriMap(mapProperties);
-      const traffic: esri.MapImageLayer = new EsriMapImageLayer(trafficProperties);
+      const traffic: esri.MapImageLayer = new EsriMapImageLayer(
+        trafficProperties
+      );
       // Set type of map view
       const mapViewProperties: esri.MapViewProperties = {
         container: this.mapViewEl.nativeElement,
@@ -209,15 +201,13 @@ export class HomePage implements OnInit {
       map.add(traffic);
       this.esriMapView = new EsriMapView(mapViewProperties);
 
-
-
       // All resources in the MapView and the map have loaded.
       // Now execute additional processes
       // this.esriMapView.when(() => {
       //   this.mapLoaded.emit(this.esriMapView);
       // });
     } catch (error) {
-      console.log("Error on Initializing Map: " + error);
+      console.error("Error on Initializing Map: " + error);
     }
   }
 
@@ -229,13 +219,13 @@ export class HomePage implements OnInit {
       ]);
       if (type == "origin") {
         const pointOriginProperties: esri.PointProperties = {
-          "y": pointRefs[0],
-          "x": pointRefs[1],
-          "spatialReference": { wkid: 4326 }
+          y: pointRefs[0],
+          x: pointRefs[1],
+          spatialReference: { wkid: 4326 }
         };
 
         const pointOrigin: esri.Point = new EsriPoint(pointOriginProperties);
-				
+
         const graphicOriginProperties: esri.GraphicProperties = {
           symbol: {
             type: "simple-marker",
@@ -252,17 +242,18 @@ export class HomePage implements OnInit {
         // All resources in the MapView and the map have loaded.
         // Now execute additional processes
         this.esriMapView.graphics.add(graphicOrigin);
+        this.esriMapView.goTo([pointRefs[1], pointRefs[0]]);
       } else {
         const pointDestinationProperties: esri.PointProperties = {
-          "y": pointRefs[0],
-          "x": pointRefs[1],
-          "spatialReference": { wkid: 4326 }
+          y: pointRefs[0],
+          x: pointRefs[1],
+          spatialReference: { wkid: 4326 }
         };
 
         const pointDestination: esri.Point = new EsriPoint(
           pointDestinationProperties
         );
-					
+
         const graphicDestinationProperties: esri.GraphicProperties = {
           symbol: {
             type: "simple-marker",
@@ -280,17 +271,21 @@ export class HomePage implements OnInit {
         // Now execute additional processes
         this.esriMapView.graphics.add(graphicDestination);
         this.getRoute();
-        this.isOrigin = true
+        this.isOrigin = true;
       }
       this.cardDeactive();
     } catch (error) {
-      console.log("Error on Adding Graphic Origin: " + error);
+      console.error("Error on Adding Graphic Origin: " + error);
     }
   }
 
-  async getRoute(){
+  async getRoute() {
     try {
-      const [EsriRouteTask, EsriRouteParameters, EsriFeatureSet] = await loadModules([
+      const [
+        EsriRouteTask,
+        EsriRouteParameters,
+        EsriFeatureSet
+      ] = await loadModules([
         "esri/tasks/RouteTask",
         "esri/tasks/support/RouteParameters",
         "esri/tasks/support/FeatureSet"
@@ -300,14 +295,17 @@ export class HomePage implements OnInit {
           features: this.esriMapView.graphics
         }),
         returnDirections: true
-      }
+      };
 
       var routeTaskProperties: esri.RouteTaskProperties = {
-        url: "https://utility.arcgis.com/usrsvcs/appservices/xeri2whs8fI3DbNH/rest/services/World/Route/NAServer/Route_World/solve"
-      }
+        url:
+          "https://utility.arcgis.com/usrsvcs/appservices/xeri2whs8fI3DbNH/rest/services/World/Route/NAServer/Route_World/solve"
+      };
 
-      var routeParams: esri.RouteParameters = new EsriRouteParameters(routeParamsProperties)
-      var routeTask: esri.RouteTask = new EsriRouteTask(routeTaskProperties)
+      var routeParams: esri.RouteParameters = new EsriRouteParameters(
+        routeParamsProperties
+      );
+      var routeTask: esri.RouteTask = new EsriRouteTask(routeTaskProperties);
 
       routeTask.solve(routeParams).then(data => {
         data["routeResults"].forEach(result => {
@@ -316,69 +314,73 @@ export class HomePage implements OnInit {
             color: [5, 150, 255, 0.7],
             width: 3
           };
-          this.esriMapView.graphics.add(result.route)
-        }); 
+          this.esriMapView.graphics.add(result.route);
+          this.esriMapView.extent =
+            data["routeResults"][0].route.geometry.extent;
+        });
         this.showDirection(data);
         this.hasResult = true;
-      })
-    } catch {
-      console.log("Error");
-      
+        this.titleController = "Route Direction";
+      });
+    } catch (error) {
+      console.error("Error", error);
     }
   }
 
-  async showDirection(data: any){
+  async showDirection(data: any) {
     var features = data.routeResults[0].directions.features;
     for (let index = 0; index < features.length; index++) {
-      console.log("Featutes", features[index].geometry.extent);
-      
-    var extent = this.getQueryStringByExtent(features[index].geometry.extent);
-    let requestString = "http://52.148.81.212/asiangames-bmkg/featureserver/0/query?f=json&"+extent;//+;
-    this.esriGeocodeService.getWeather(requestString).toPromise().then(weatherData => {
-      var weatherReadable = "Cuaca tidak ditemukan"
-      if(weatherData["features"][0].attributes.weather.length > 0){
+      var extent = this.getQueryStringByExtent(features[index].geometry.extent);
+      let requestString =
+        "http://52.148.81.212/asiangames-bmkg/featureserver/0/query?f=json&" +
+        extent; //+;
+      var weatherData = await this.esriGeocodeService
+        .getWeather(requestString)
+        .toPromise();
+      var weatherReadable = "Cuaca tidak ditemukan";
+      if (weatherData["features"].length > 0) {
         switch (weatherData["features"][0].attributes.weather) {
           case "10":
-            weatherReadable = "Cerah"
+            weatherReadable = "Cerah";
             break;
-            case "101":
-            weatherReadable = "Cerah Berawan"
+          case "101":
+            weatherReadable = "Cerah Berawan";
             break;
           case "102":
-            weatherReadable = "Cerah Berawan"
+            weatherReadable = "Cerah Berawan";
             break;
-            case "103":
-            weatherReadable = "Berawan"
+          case "103":
+            weatherReadable = "Berawan";
             break;
-            case "104":
-            weatherReadable = "Berawan Tebal"
+          case "104":
+            weatherReadable = "Berawan Tebal";
             break;
-            case "5":
-            weatherReadable = "Udara Kabur"
+          case "5":
+            weatherReadable = "Udara Kabur";
             break;
-            case "10":
-            weatherReadable = "Asap"
+          case "10":
+            weatherReadable = "Asap";
             break;
-            case "45":
-            weatherReadable = "Kabut"
+          case "45":
+            weatherReadable = "Kabut";
             break;
-            case "60":
-            weatherReadable = "Hujan Ringan"
+          case "60":
+            weatherReadable = "Hujan Ringan";
             break;
-            case "61":
-            weatherReadable = "Hujan Sedang"
+          case "61":
+            weatherReadable = "Hujan Sedang";
             break;
-            case "63":
-            weatherReadable = "Hujan Lebat"
+          case "63":
+            weatherReadable = "Hujan Lebat";
             break;
-            case "80":
-            weatherReadable = "Hujan Lokal"
+          case "80":
+            weatherReadable = "Hujan Lokal";
             break;
-            case "95":
-            weatherReadable = "Hujan Petir"
+          case "95":
+            weatherReadable = "Hujan Petir";
             break;
-            case "97":
-            weatherReadable = "Hujan Petir"
+          case "97":
+            weatherReadable = "Hujan Petir";
             break;
           default:
             break;
@@ -386,18 +388,15 @@ export class HomePage implements OnInit {
         this.weatherData.push({
           condition: weatherData["features"][0].attributes.weather,
           text: weatherReadable
-        })
+        });
       } else {
         this.weatherData.push({
           condition: "100",
           text: weatherReadable
-        })
+        });
       }
-    });
-      
     }
-    this.routeData = features
-    
+    this.routeData = features;
   }
 
   ngOnInit() {
@@ -405,19 +404,20 @@ export class HomePage implements OnInit {
   }
 
   cardActive() {
-    
-    let inputIcon = document.getElementById("card-main")
-    inputIcon.style.height = "80vh"
-    
+    let inputIcon = document.getElementById("card-main");
+    inputIcon.style.height = "80vh";
   }
 
-  cardDeactive(){
-    let inputIcon = document.getElementById("card-main")
-    inputIcon.style.height = "50vh"
+  cardDeactive() {
+    let inputIcon = document.getElementById("card-main");
+    inputIcon.style.height = "50vh";
   }
 
-  getQueryStringByExtent(extent:any){
-    let result = "geometry="+encodeURI(JSON.stringify(extent)) + "&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects";
+  getQueryStringByExtent(extent: any) {
+    let result =
+      "geometry=" +
+      encodeURI(JSON.stringify(extent)) +
+      "&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects";
     return result;
   }
 }

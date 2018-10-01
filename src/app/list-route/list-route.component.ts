@@ -16,22 +16,22 @@ export class ListRouteComponent implements OnInit {
     return this._textRoute;
   }
 
-  private _textCuaca: string = "Cuaca";
+  private _textWeather: string = "Cuaca";
   @Input()
-  set textCuaca(textCuaca: string) {
-    this._textCuaca = textCuaca;
+  set textWeather(textWeather: string) {
+    this._textWeather = textWeather;
   }
-  get textCuaca(): string {
-    return this._textCuaca;
+  get textWeather(): string {
+    return this._textWeather;
   }
 
-  private _angkaCuaca: string = "./../../assets/icon/cuaca/10-pm.png";
+  private _conditionWeather: string = "./../../assets/icon/cuaca/10-pm.png";
   @Input()
-  set angkaCuaca(angkaCuaca: string) {
-    this._angkaCuaca = "./../../assets/icon/cuaca/"+angkaCuaca+"-pm.png";
+  set conditionWeather(conditionWeather: string) {
+    this._conditionWeather = "./../../assets/icon/cuaca/"+conditionWeather+".png";
   }
-  get angkaCuaca(): string {
-    return this._angkaCuaca;
+  get conditionWeather(): string {
+    return this._conditionWeather;
   }
 
   // private _imgCuaca: string;
