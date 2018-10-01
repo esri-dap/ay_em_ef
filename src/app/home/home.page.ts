@@ -11,11 +11,12 @@ import { loadModules } from "esri-loader";
 import esri = __esri;
 
 import { EsriGeocodeService } from "../esri-geocode.service";
+import { log } from "util";
 
 @Component({
   selector: "app-home",
   templateUrl: "home.page.html",
-  styleUrls: ["home.page.css"]
+  styleUrls: ["../app.scss", "home.page.css"]
 })
 export class HomePage implements OnInit {
   // @Output()
@@ -39,7 +40,7 @@ export class HomePage implements OnInit {
   //   return this._zoom;
   // }
 
-  private _center: Array<number> = [0.1278, 51.5074];
+  private _center: Array<number> = [ 106.802216, -6.218335];
   // @Input()
   // set center(center: Array<number>) {
   //   this._center = center;
@@ -71,6 +72,14 @@ export class HomePage implements OnInit {
   xRef: any;
   yRef: any;
   pointRefs: any;
+
+  isOrigin: boolean = true;
+  hasResult: boolean = false;
+
+  titleController: string = "Where to Go?"
+
+  weatherData: any = []
+  routeData: any
 
   constructor(private esriGeocodeService: EsriGeocodeService) {
     this.initLocation();
@@ -151,6 +160,7 @@ export class HomePage implements OnInit {
           // this.setRoutePointOrigin(this.pointRefs);
           console.log("pointrefs", this.pointRefs);
           this.drawPoint(this.pointRefs, "origin");
+          this.isOrigin = false;
         } else {
           this.listDestinationLocationSuggestion = null;
           this.destinationInput =
@@ -171,9 +181,10 @@ export class HomePage implements OnInit {
 
   async initializeMap() {
     try {
-      const [EsriMap, EsriMapView] = await loadModules([
+      const [EsriMap, EsriMapView, EsriMapImageLayer] = await loadModules([
         "esri/Map",
-        "esri/views/MapView"
+        "esri/views/MapView",
+        "esri/layers/MapImageLayer"
       ]);
 
       // Set type of map
@@ -181,8 +192,12 @@ export class HomePage implements OnInit {
         basemap: this._basemap
       };
 
-      const map: esri.Map = new EsriMap(mapProperties);
+      const trafficProperties: esri.MapImageLayerProperties = {
+        url: 'https://utility.arcgis.com/usrsvcs/appservices/XAtxezTwqMmmQ7r7/rest/services/World/Traffic/MapServer'
+      }
 
+      const map: esri.Map = new EsriMap(mapProperties);
+      const traffic: esri.MapImageLayer = new EsriMapImageLayer(trafficProperties);
       // Set type of map view
       const mapViewProperties: esri.MapViewProperties = {
         container: this.mapViewEl.nativeElement,
@@ -191,7 +206,10 @@ export class HomePage implements OnInit {
         map: map
       };
 
+      map.add(traffic);
       this.esriMapView = new EsriMapView(mapViewProperties);
+
+
 
       // All resources in the MapView and the map have loaded.
       // Now execute additional processes
@@ -261,13 +279,145 @@ export class HomePage implements OnInit {
         // All resources in the MapView and the map have loaded.
         // Now execute additional processes
         this.esriMapView.graphics.add(graphicDestination);
+        this.getRoute();
+        this.isOrigin = true
       }
+      this.cardDeactive();
     } catch (error) {
       console.log("Error on Adding Graphic Origin: " + error);
     }
   }
 
+  async getRoute(){
+    try {
+      const [EsriRouteTask, EsriRouteParameters, EsriFeatureSet] = await loadModules([
+        "esri/tasks/RouteTask",
+        "esri/tasks/support/RouteParameters",
+        "esri/tasks/support/FeatureSet"
+      ]);
+      var routeParamsProperties: esri.RouteParametersProperties = {
+        stops: new EsriFeatureSet({
+          features: this.esriMapView.graphics
+        }),
+        returnDirections: true
+      }
+
+      var routeTaskProperties: esri.RouteTaskProperties = {
+        url: "https://utility.arcgis.com/usrsvcs/appservices/xeri2whs8fI3DbNH/rest/services/World/Route/NAServer/Route_World/solve"
+      }
+
+      var routeParams: esri.RouteParameters = new EsriRouteParameters(routeParamsProperties)
+      var routeTask: esri.RouteTask = new EsriRouteTask(routeTaskProperties)
+
+      routeTask.solve(routeParams).then(data => {
+        data["routeResults"].forEach(result => {
+          result.route.symbol = {
+            type: "simple-line",
+            color: [5, 150, 255, 0.7],
+            width: 3
+          };
+          this.esriMapView.graphics.add(result.route)
+        }); 
+        this.showDirection(data);
+        this.hasResult = true;
+      })
+    } catch {
+      console.log("Error");
+      
+    }
+  }
+
+  async showDirection(data: any){
+    var features = data.routeResults[0].directions.features;
+    for (let index = 0; index < features.length; index++) {
+      console.log("Featutes", features[index].geometry.extent);
+      
+    var extent = this.getQueryStringByExtent(features[index].geometry.extent);
+    let requestString = "http://52.148.81.212/asiangames-bmkg/featureserver/0/query?f=json&"+extent;//+;
+    this.esriGeocodeService.getWeather(requestString).toPromise().then(weatherData => {
+      var weatherReadable = "Cuaca tidak ditemukan"
+      if(weatherData["features"][0].attributes.weather.length > 0){
+        switch (weatherData["features"][0].attributes.weather) {
+          case "10":
+            weatherReadable = "Cerah"
+            break;
+            case "101":
+            weatherReadable = "Cerah Berawan"
+            break;
+          case "102":
+            weatherReadable = "Cerah Berawan"
+            break;
+            case "103":
+            weatherReadable = "Berawan"
+            break;
+            case "104":
+            weatherReadable = "Berawan Tebal"
+            break;
+            case "5":
+            weatherReadable = "Udara Kabur"
+            break;
+            case "10":
+            weatherReadable = "Asap"
+            break;
+            case "45":
+            weatherReadable = "Kabut"
+            break;
+            case "60":
+            weatherReadable = "Hujan Ringan"
+            break;
+            case "61":
+            weatherReadable = "Hujan Sedang"
+            break;
+            case "63":
+            weatherReadable = "Hujan Lebat"
+            break;
+            case "80":
+            weatherReadable = "Hujan Lokal"
+            break;
+            case "95":
+            weatherReadable = "Hujan Petir"
+            break;
+            case "97":
+            weatherReadable = "Hujan Petir"
+            break;
+          default:
+            break;
+        }
+        this.weatherData.push({
+          condition: weatherData["features"][0].attributes.weather,
+          text: weatherReadable
+        })
+      } else {
+        this.weatherData.push({
+          condition: "100",
+          text: weatherReadable
+        })
+      }
+    });
+      
+    }
+    this.routeData = features
+    
+  }
+
   ngOnInit() {
     this.initializeMap();
+  }
+
+  cardActive() {
+    
+    let inputIcon = document.getElementById("card-main")
+    inputIcon.style.height = "80vh"
+    
+  }
+
+  cardDeactive(){
+    let inputIcon = document.getElementById("card-main")
+    inputIcon.style.height = "50vh"
+  }
+
+  getQueryStringByExtent(extent:any){
+    let result = "geometry="+encodeURI(JSON.stringify(extent)) + "&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects";
+    return result;
   }
 }

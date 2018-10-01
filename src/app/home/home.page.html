@@ -6,18 +6,23 @@
   </ion-toolbar>
 </ion-header> -->
 
+<!-- <ion-list lines="none">
+    <list-route>
+    </list-route>
+  </ion-list> -->
+
 <ion-content>
   <div #mapViewNode></div>
 
-  <ion-card class="card-main">
+  <ion-card class="card-main" id="card-main">
 
     <ion-card-header>
       <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-      <ion-card-title>Where to go?</ion-card-title>
+      <ion-card-title>{{titleController}}</ion-card-title>
     </ion-card-header>
 
-    <ion-card-content>
-      <input-with-icon-inside [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput">
+    <ion-card-content *ngIf="isOrigin && !hasResult">
+      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput" (click)="cardActive()">
       </input-with-icon-inside>
       <br />
       <ion-list lines="none" *ngFor="let locationOrigin of listOriginLocationSuggestion">
@@ -25,6 +30,23 @@
         </list-address>
       </ion-list>
     </ion-card-content>
+
+    <ion-card-content *ngIf="!isOrigin && !hasResult">
+        <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')" [(ngModel)]="originInput" (click)="cardActive()">
+        </input-with-icon-inside>
+        <br />
+        <ion-list lines="none" *ngFor="let locationDestination of listDestinationLocationSuggestion">
+          <list-address [addressName]="locationDestination.text.split(',')[0]" [addressStreet]="locationDestination.text" (click)="selectAddress(locationDestination.magicKey, 'destination')">
+          </list-address>
+        </ion-list>
+      </ion-card-content>
+
+  <ion-card-content *ngIf="hasResult">
+    <ion-list *ngFor="let route of routeData; let i = index;">
+      <list-route [angkaCuaca]="weatherData[i]?.condition" [textCuaca]="weatherData[i]?.text" [textRoute]="route.attributes.text">
+      </list-route>
+    </ion-list>
+  </ion-card-content>
 
   </ion-card>
 </ion-content>

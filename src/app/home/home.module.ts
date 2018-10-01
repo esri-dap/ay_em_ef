@@ -7,6 +7,7 @@ import { RouterModule } from '@angular/router';
 import { HomePage } from './home.page';
 import { InputWithIconInsideComponent } from '../input-with-icon-inside/input-with-icon-inside.component';
 import { ListAddressComponent } from '../list-address/list-address.component';
+import { ListRouteComponent } from '../list-route/list-route.component';
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { ListAddressComponent } from '../list-address/list-address.component';
       }
     ])
   ],
-  declarations: [HomePage, InputWithIconInsideComponent, ListAddressComponent]
+  declarations: [HomePage, InputWithIconInsideComponent, ListAddressComponent, ListRouteComponent]
 })
 export class HomePageModule {}

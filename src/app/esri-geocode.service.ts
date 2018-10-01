@@ -37,4 +37,8 @@ export class EsriGeocodeService {
     .set('outFields', '*')
     return this.http.get("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates", {params: getAddressParam})
   }
+
+  getWeather(url){
+    return this.http.get(url);
+  }
 }
