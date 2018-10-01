@@ -1,0 +1,72 @@
+/* import the required JSAPI css */
+@import 'https://js.arcgis.com/4.8/esri/css/main.css';
+
+.esri-view {
+    height: 60vh;
+}
+
+.card-main {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    -webkit-border-radius: 20px;
+    border-radius: 20px;
+    background-clip: padding-box;
+    -webkit-box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    -moz-box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    height: 50vh;
+    width: 100vw;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 5px;
+    top: 50vh;
+    text-align: start;
+    z-index: 100;
+}
+
+.card-main h1 {
+    font-size: 2em;
+    font-weight: 300;
+}
+
+.card-main i {
+    position: absolute;
+    font-size: 12em;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    color: rgba(46, 204, 113, .1);
+}
+
+.card-main ion-card-title {
+    font-size: 1.8em
+}
+
+
+
+.input-icon-inside {
+    background: #FBFBFC;
+    border-radius: 4px;
+    --padding-start: 0px;
+    --inner-border-width: 0px;
+}
+
+.input-icon-inside ion-input {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #8A8FAB;
+    text-align: left;
+    line-height: 20px;
+}
+
+.input-icon-inside-label {
+    width: 100px;
+    max-width: 50px;
+    min-width: 50px;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+    padding: 0px;
+}

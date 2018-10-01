@@ -1,12 +1,30 @@
-<ion-header>
+<!-- <ion-header>
   <ion-toolbar>
     <ion-title>
       Ionic Blank
     </ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
-<ion-content padding>
-  The world is your oyster.
-  <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs">docs</a> will be your guide.</p>
+<ion-content>
+  <div #mapViewNode></div>
+
+  <ion-card class="card-main">
+
+    <ion-card-header>
+      <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
+      <ion-card-title>Where to go?</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <input-with-icon-inside [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput">
+      </input-with-icon-inside>
+      <br />
+      <ion-list lines="none" *ngFor="let locationOrigin of listOriginLocationSuggestion">
+        <list-address [addressName]="locationOrigin.text.split(',')[0]" [addressStreet]="locationOrigin.text" (click)="selectAddress(locationOrigin.magicKey, 'origin')">
+        </list-address>
+      </ion-list>
+    </ion-card-content>
+
+  </ion-card>
 </ion-content>
