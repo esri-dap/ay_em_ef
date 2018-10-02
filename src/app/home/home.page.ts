@@ -8,10 +8,10 @@ import {
   EventEmitter
 } from "@angular/core";
 import { loadModules } from "esri-loader";
-import esri = __esri;
-
 import { EsriGeocodeService } from "../esri-geocode.service";
 import { log } from "util";
+import { parseString } from "xml2js";
+import esri = __esri;
 
 @Component({
   selector: "app-home",
@@ -139,9 +139,6 @@ export class HomePage implements OnInit {
   selectAddress(input, type) {
     this.esriGeocodeService.getAddress(input).subscribe(
       res => {
-        //  this.xRef = res["candidates"][0]["location"]["x"]
-        //  this.yRef = res["candidates"][0]["location"]["y"]
-        //  this.pointRefs = [this.yRef, this.xRef]
         if (type == "origin") {
           this.listOriginLocationSuggestion = null;
           this.originInput = res["candidates"][0]["attributes"]["LongLabel"];
@@ -332,62 +329,80 @@ export class HomePage implements OnInit {
     for (let index = 0; index < features.length; index++) {
       var extent = this.getQueryStringByExtent(features[index].geometry.extent);
       let requestString =
-        "http://52.148.81.212/asiangames-bmkg/featureserver/0/query?f=json&" +
+        "https://services2.arcgis.com/LvCBNZuwhTWWbvod/arcgis/rest/services/Kecamatan_Bali_Jkt/FeatureServer/0/query?f=json&" +
         extent; //+;
-      var weatherData = await this.esriGeocodeService
-        .getWeather(requestString)
+      var bmkgStringId = await this.esriGeocodeService
+        .getBMKGStringId(requestString)
         .toPromise();
       var weatherReadable = "Cuaca tidak ditemukan";
-      if (weatherData["features"].length > 0) {
-        switch (weatherData["features"][0].attributes.weather) {
-          case "10":
-            weatherReadable = "Cerah";
-            break;
-          case "101":
-            weatherReadable = "Cerah Berawan";
-            break;
-          case "102":
-            weatherReadable = "Cerah Berawan";
-            break;
-          case "103":
-            weatherReadable = "Berawan";
-            break;
-          case "104":
-            weatherReadable = "Berawan Tebal";
-            break;
-          case "5":
-            weatherReadable = "Udara Kabur";
-            break;
-          case "10":
-            weatherReadable = "Asap";
-            break;
-          case "45":
-            weatherReadable = "Kabut";
-            break;
-          case "60":
-            weatherReadable = "Hujan Ringan";
-            break;
-          case "61":
-            weatherReadable = "Hujan Sedang";
-            break;
-          case "63":
-            weatherReadable = "Hujan Lebat";
-            break;
-          case "80":
-            weatherReadable = "Hujan Lokal";
-            break;
-          case "95":
-            weatherReadable = "Hujan Petir";
-            break;
-          case "97":
-            weatherReadable = "Hujan Petir";
-            break;
-          default:
-            break;
-        }
-        this.weatherData.push({
-          condition: weatherData["features"][0].attributes.weather,
-          text: weatherReadable
+      if (bmkgStringId["features"].length > 0) {
+        let weatherData = await this.esriGeocodeService
+          .getWeatherData(
+            bmkgStringId["features"][0]["attributes"]["ID_BMKG_string"]
+          )
+          .toPromise();
+        parseString(weatherData, (errorParseXML, resultParseXML) => {
+          if (errorParseXML) {
+            throw errorParseXML;
+          } else {
+            if (resultParseXML.data.data !== undefined) {
+              this.weatherData.push({
+                condition: "100",
+                text: weatherReadable
+              });
+            } else {
+              switch (resultParseXML.data.area[0].hourly[0].param[0].$.weather) {
+                case "10":
+                  weatherReadable = "Cerah";
+                  break;
+                case "101":
+                  weatherReadable = "Cerah Berawan";
+                  break;
+                case "102":
+                  weatherReadable = "Cerah Berawan";
+                  break;
+                case "103":
+                  weatherReadable = "Berawan";
+                  break;
+                case "104":
+                  weatherReadable = "Berawan Tebal";
+                  break;
+                case "5":
+                  weatherReadable = "Udara Kabur";
+                  break;
+                case "10":
+                  weatherReadable = "Asap";
+                  break;
+                case "45":
+                  weatherReadable = "Kabut";
+                  break;
+                case "60":
+                  weatherReadable = "Hujan Ringan";
+                  break;
+                case "61":
+                  weatherReadable = "Hujan Sedang";
+                  break;
+                case "63":
+                  weatherReadable = "Hujan Lebat";
+                  break;
+                case "80":
+                  weatherReadable = "Hujan Lokal";
+                  break;
+                case "95":
+                  weatherReadable = "Hujan Petir";
+                  break;
+                case "97":
+                  weatherReadable = "Hujan Petir";
+                  break;
+                default:
+                  break;
+              }
+              this.weatherData.push({
+                condition: resultParseXML.data.area[0].hourly[0].param[0].$.weather,
+                text: weatherReadable
+              });
+            }
+          }
         });
       } else {
         this.weatherData.push({
@@ -416,8 +431,8 @@ export class HomePage implements OnInit {
   getQueryStringByExtent(extent: any) {
     let result =
       "geometry=" +
-      encodeURI(JSON.stringify(extent)) +
-      "&geometryType=esriGeometryEnvelope&spatialRel=esriSpatialRelIntersects";
+      encodeURI(JSON.stringify(extent.center)) +
+      "&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&outFields=ID_BMKG_string";
     return result;
   }
 }

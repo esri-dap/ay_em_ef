@@ -38,7 +38,11 @@ export class EsriGeocodeService {
     return this.http.get("https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates", {params: getAddressParam})
   }
 
-  getWeather(url){
+  getBMKGStringId(url){
     return this.http.get(url);
+  }
+
+  getWeatherData(id){
+    return this.http.get("https://dataweb.bmkg.go.id/API/Traffic/kecamatan.bmkg?id="+id, {responseType: "text"})
   }
 }
