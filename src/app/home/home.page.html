@@ -17,12 +17,18 @@
   <ion-card class="card-main" id="card-main">
 
     <ion-card-header>
+
       <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-      <ion-card-title>{{titleController}}</ion-card-title>
+      <ion-card-title>
+        <ion-button shape="round" fill="outline" size="small" *ngIf="hasResult" (click)="resetStatus()">
+          <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
+        </ion-button>{{titleController}}
+      </ion-card-title>
     </ion-card-header>
 
     <ion-card-content *ngIf="isOrigin && !hasResult">
-      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput" (click)="cardActive()">
+      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput"
+        (click)="cardActive()">
       </input-with-icon-inside>
       <br />
       <ion-list lines="none" *ngFor="let locationOrigin of listOriginLocationSuggestion">
@@ -32,21 +38,24 @@
     </ion-card-content>
 
     <ion-card-content *ngIf="!isOrigin && !hasResult">
-        <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')" [(ngModel)]="originInput" (click)="cardActive()">
-        </input-with-icon-inside>
-        <br />
-        <ion-list lines="none" *ngFor="let locationDestination of listDestinationLocationSuggestion">
-          <list-address [addressName]="locationDestination.text.split(',')[0]" [addressStreet]="locationDestination.text" (click)="selectAddress(locationDestination.magicKey, 'destination')">
-          </list-address>
-        </ion-list>
-      </ion-card-content>
+      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')" [(ngModel)]="originInput"
+        (click)="cardActive()">
+      </input-with-icon-inside>
+      <br />
+      <ion-list lines="none" *ngFor="let locationDestination of listDestinationLocationSuggestion">
+        <list-address [addressName]="locationDestination.text.split(',')[0]" [addressStreet]="locationDestination.text"
+          (click)="selectAddress(locationDestination.magicKey, 'destination')">
+        </list-address>
+      </ion-list>
+    </ion-card-content>
 
-  <ion-card-content *ngIf="hasResult">
-    <ion-list *ngFor="let route of routeData; let i = index;">
-      <list-route [conditionWeather]="weatherData[i]?.condition" [textWeather]="weatherData[i]?.text" [textRoute]="route.attributes.text">
-      </list-route>
-    </ion-list>
-  </ion-card-content>
+    <ion-card-content *ngIf="hasResult">
+      <ion-img class="loading" [src]="'./../../assets/icon/loading.gif'" *ngIf="hasResult && !routeData"></ion-img>
+      <ion-list *ngFor="let route of routeData; let i = index;">
+        <list-route [conditionWeather]="weatherData[i]?.condition" [textWeather]="weatherData[i]?.text" [textRoute]="route.attributes.text">
+        </list-route>
+      </ion-list>
+    </ion-card-content>
 
   </ion-card>
 </ion-content>

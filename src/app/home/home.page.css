@@ -72,3 +72,8 @@
     align-content: center;
     padding: 0px;
 }
+
+.loading {
+    height: 200px;
+    width: auto;
+}

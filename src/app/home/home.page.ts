@@ -76,10 +76,10 @@ export class HomePage implements OnInit {
   isOrigin: boolean = true;
   hasResult: boolean = false;
 
-  titleController: string = "Where to Go?";
+  titleController: string = "Mau kemana?";
 
   weatherData: any = [];
-  routeData: any;
+  routeData: any = null;
 
   constructor(private esriGeocodeService: EsriGeocodeService) {
     this.initLocation();
@@ -277,6 +277,9 @@ export class HomePage implements OnInit {
   }
 
   async getRoute() {
+    this.titleController = "Route Direction";
+    this.hasResult = true;
+    console.log(this.hasResult && !this.routeData)
     try {
       const [
         EsriRouteTask,
@@ -318,8 +321,6 @@ export class HomePage implements OnInit {
             data["routeResults"][0].route.geometry.extent;
         });
         this.showDirection(data);
-        this.hasResult = true;
-        this.titleController = "Route Direction";
       });
     } catch (error) {
       console.error("Error", error);
@@ -328,7 +329,7 @@ export class HomePage implements OnInit {
 
   async showDirection(data: any) {
     var features = data.routeResults[0].directions.features;
-    await features.forEach( async feature => {
+    await features.forEach(async feature => {
       var extent = this.getQueryStringByExtent(feature.geometry.extent);
       let requestString =
         "https://services2.arcgis.com/LvCBNZuwhTWWbvod/arcgis/rest/services/Kecamatan_Bali_Jkt/FeatureServer/0/query?f=json&" +
@@ -353,7 +354,9 @@ export class HomePage implements OnInit {
                 text: weatherReadable
               });
             } else {
-              switch (resultParseXML.data.area[0].hourly[0].param[0].$.weather) {
+              switch (
+                resultParseXML.data.area[0].hourly[0].param[0].$.weather
+              ) {
                 case "10":
                   weatherReadable = "Cerah";
                   break;
@@ -400,7 +403,8 @@ export class HomePage implements OnInit {
                   break;
               }
               this.weatherData.push({
-                condition: resultParseXML.data.area[0].hourly[0].param[0].$.weather,
+                condition:
+                  resultParseXML.data.area[0].hourly[0].param[0].$.weather,
                 text: weatherReadable
               });
             }
@@ -412,7 +416,7 @@ export class HomePage implements OnInit {
           text: weatherReadable
         });
       }
-    })
+    });
     this.routeData = features;
   }
 
@@ -436,5 +440,17 @@ export class HomePage implements OnInit {
       encodeURI(JSON.stringify(extent.center)) +
       "&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&outFields=ID_BMKG_string";
     return result;
+  }
+
+  resetStatus() {
+    this.isOrigin = true;
+    this.hasResult = false;
+    this.listOriginLocationSuggestion = null;
+    this.listDestinationLocationSuggestion = null;
+    this.originInput = null;
+    this.destinationInput = null;
+    this.routeData = null;
+    this.titleController = "Mau kemana?"
+    this.esriMapView.graphics.removeAll();
   }
 }
