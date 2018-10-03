@@ -26,8 +26,8 @@
       </ion-card-title>
     </ion-card-header>
 
-    <ion-card-content *ngIf="isOrigin && !hasResult">
-      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput"
+    <ion-card-content *ngIf="!hasResult">
+      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput" *ngIf="isSearchingAddress == 'origin' || !isSearchingAddress"
         (click)="cardActive()">
       </input-with-icon-inside>
       <br />
@@ -37,10 +37,10 @@
       </ion-list>
     </ion-card-content>
 
-    <ion-card-content *ngIf="!isOrigin && !hasResult">
-      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')" [(ngModel)]="originInput"
+    <ion-card-content *ngIf="!hasResult">
+      <destination-input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')" [(ngModel)]="destinationInput" *ngIf="isSearchingAddress !== 'origin'  || !isSearchingAddress"
         (click)="cardActive()">
-      </input-with-icon-inside>
+      </destination-input-with-icon-inside>
       <br />
       <ion-list lines="none" *ngFor="let locationDestination of listDestinationLocationSuggestion">
         <list-address [addressName]="locationDestination.text.split(',')[0]" [addressStreet]="locationDestination.text"
@@ -48,6 +48,14 @@
         </list-address>
       </ion-list>
     </ion-card-content>
+
+    <ion-card-content *ngIf="!hasResult">
+      <ion-item text-wrap>
+        <ion-label position="stacked">Jam Keberangkatan (3 jam sekali)</ion-label>
+        <br>
+        <ion-datetime displayFormat="HH:mm" hourValues="0,3,6,9,12,15,18,21"  minuteValues="0" (ionChange)="queryTravelHour($event)" (click)="cardActive()"></ion-datetime>
+      </ion-item>
+    </ion-card-content> 
 
     <ion-card-content *ngIf="hasResult">
       <ion-img class="loading" [src]="'./../../assets/icon/loading.gif'" *ngIf="hasResult && !routeData"></ion-img>

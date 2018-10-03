@@ -67,13 +67,14 @@ export class HomePage implements OnInit {
   longitude: any;
   originInput: string;
   destinationInput: string;
+  timeInput: number = -1;
   listOriginLocationSuggestion: any;
   listDestinationLocationSuggestion: any;
   xRef: any;
   yRef: any;
   pointRefs: any;
 
-  isOrigin: boolean = true;
+  isSearchingAddress: string = null;
   hasResult: boolean = false;
 
   titleController: string = "Mau kemana?";
@@ -121,6 +122,7 @@ export class HomePage implements OnInit {
 
   queryStreet(input, type) {
     if (input.target.value.indexOf(",") == -1) {
+      this.isSearchingAddress = type;
       this.esriGeocodeService
         .getSuggestion(input.target.value, this.latitude, this.longitude)
         .subscribe(
@@ -136,6 +138,43 @@ export class HomePage implements OnInit {
     }
   }
 
+  queryTravelHour(input) {
+    console.log(input.target.value);
+    switch (input.target.value.hour.value) {
+      case 0:
+        this.timeInput = 0;
+        break;
+      case 3:
+        this.timeInput = 1;
+        break;
+      case 6:
+        this.timeInput = 2;
+        break;
+      case 9:
+        this.timeInput = 3;
+        break;
+      case 9:
+        this.timeInput = 4;
+        break;
+      case 12:
+        this.timeInput = 5;
+        break;
+      case 15:
+        this.timeInput = 6;
+        break;
+      case 18:
+        this.timeInput = 7;
+        break;
+      case 21:
+        this.timeInput = 8;
+        break;
+      default:
+        this.timeInput = -1;
+        break;
+    }
+    this.cardDeactive();
+  }
+
   selectAddress(input, type) {
     this.esriGeocodeService.getAddress(input).subscribe(
       res => {
@@ -146,7 +185,6 @@ export class HomePage implements OnInit {
           this.yRef = res["candidates"][0]["location"]["y"];
           this.pointRefs = [this.yRef, this.xRef];
           this.drawPoint(this.pointRefs, "origin");
-          this.isOrigin = false;
         } else {
           this.listDestinationLocationSuggestion = null;
           this.destinationInput =
@@ -155,9 +193,9 @@ export class HomePage implements OnInit {
             res["candidates"][0]["location"]["y"],
             res["candidates"][0]["location"]["x"]
           ];
-          // this.esriMapComponent.setRoutePointDestination(this.pointRefs);
           this.drawPoint(this.pointRefs, "destination");
         }
+        this.isSearchingAddress = null;
       },
       error => {
         console.error(error);
@@ -267,8 +305,6 @@ export class HomePage implements OnInit {
         // All resources in the MapView and the map have loaded.
         // Now execute additional processes
         this.esriMapView.graphics.add(graphicDestination);
-        this.getRoute();
-        this.isOrigin = true;
       }
       this.cardDeactive();
     } catch (error) {
@@ -279,7 +315,7 @@ export class HomePage implements OnInit {
   async getRoute() {
     this.titleController = "Route Direction";
     this.hasResult = true;
-    console.log(this.hasResult && !this.routeData)
+    console.log(this.hasResult && !this.routeData);
     try {
       const [
         EsriRouteTask,
@@ -354,8 +390,10 @@ export class HomePage implements OnInit {
                 text: weatherReadable
               });
             } else {
+              console.log(this.timeInput, resultParseXML.data.area[0].hourly[0].param[this.timeInput]);
+              
               switch (
-                resultParseXML.data.area[0].hourly[0].param[0].$.weather
+                resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.weather
               ) {
                 case "10":
                   weatherReadable = "Cerah";
@@ -404,7 +442,7 @@ export class HomePage implements OnInit {
               }
               this.weatherData.push({
                 condition:
-                  resultParseXML.data.area[0].hourly[0].param[0].$.weather,
+                  resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.weather,
                 text: weatherReadable
               });
             }
@@ -432,6 +470,9 @@ export class HomePage implements OnInit {
   cardDeactive() {
     let inputIcon = document.getElementById("card-main");
     inputIcon.style.height = "50vh";
+    if (this.esriMapView.graphics.length > 1 && this.timeInput > -1) {
+      this.getRoute();
+    }
   }
 
   getQueryStringByExtent(extent: any) {
@@ -443,14 +484,16 @@ export class HomePage implements OnInit {
   }
 
   resetStatus() {
-    this.isOrigin = true;
+    this.isSearchingAddress = null;
     this.hasResult = false;
     this.listOriginLocationSuggestion = null;
     this.listDestinationLocationSuggestion = null;
     this.originInput = null;
     this.destinationInput = null;
     this.routeData = null;
-    this.titleController = "Mau kemana?"
+    this.timeInput = -1;
+    this.weatherData = []
+    this.titleController = "Mau kemana?";
     this.esriMapView.graphics.removeAll();
   }
 }

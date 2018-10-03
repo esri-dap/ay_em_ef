@@ -1,0 +1,26 @@
+
+
+.input-icon-inside {
+    background: #FBFBFC;
+    border-radius: 4px;
+    --padding-start: 0px;
+    --inner-border-width: 0px;
+}
+
+.input-icon-inside ion-input {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #8A8FAB;
+    text-align: left;
+    line-height: 20px;
+}
+
+.input-icon-inside-label {
+    width: 100px;
+    max-width: 50px;
+    min-width: 50px;
+    text-align: center;
+    align-items: center;
+    align-content: center;
+    padding: 0px;
+}
