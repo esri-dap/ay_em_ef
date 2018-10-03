@@ -291,7 +291,9 @@ export class HomePage implements OnInit {
         stops: new EsriFeatureSet({
           features: this.esriMapView.graphics
         }),
-        returnDirections: true
+        returnDirections: true,
+        directionsLengthUnits: "meters",
+        directionsLanguage: "ID_ID"
       };
 
       var routeTaskProperties: esri.RouteTaskProperties = {
@@ -326,8 +328,8 @@ export class HomePage implements OnInit {
 
   async showDirection(data: any) {
     var features = data.routeResults[0].directions.features;
-    for (let index = 0; index < features.length; index++) {
-      var extent = this.getQueryStringByExtent(features[index].geometry.extent);
+    await features.forEach( async feature => {
+      var extent = this.getQueryStringByExtent(feature.geometry.extent);
       let requestString =
         "https://services2.arcgis.com/LvCBNZuwhTWWbvod/arcgis/rest/services/Kecamatan_Bali_Jkt/FeatureServer/0/query?f=json&" +
         extent; //+;
@@ -410,7 +412,7 @@ export class HomePage implements OnInit {
           text: weatherReadable
         });
       }
-    }
+    })
     this.routeData = features;
   }
 
