@@ -139,7 +139,6 @@ export class HomePage implements OnInit {
   }
 
   queryTravelHour(input) {
-    console.log(input.target.value);
     switch (input.target.value.hour.value) {
       case 0:
         this.timeInput = 0;
@@ -315,7 +314,6 @@ export class HomePage implements OnInit {
   async getRoute() {
     this.titleController = "Route Direction";
     this.hasResult = true;
-    console.log(this.hasResult && !this.routeData);
     try {
       const [
         EsriRouteTask,
@@ -390,8 +388,6 @@ export class HomePage implements OnInit {
                 text: weatherReadable
               });
             } else {
-              console.log(this.timeInput, resultParseXML.data.area[0].hourly[0].param[this.timeInput]);
-              
               switch (
                 resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.weather
               ) {
