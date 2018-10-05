@@ -40,7 +40,7 @@ export class HomePage implements OnInit {
   //   return this._zoom;
   // }
 
-  private _center: Array<number> = [106.802216, -6.218335];
+  private _center: Array<number> = [106.8417027, -6.1560008];
   // @Input()
   // set center(center: Array<number>) {
   //   this._center = center;
@@ -77,7 +77,7 @@ export class HomePage implements OnInit {
   isSearchingAddress: string = null;
   hasResult: boolean = false;
 
-  titleController: string = "Mau kemana?";
+  titleController: string = "Weather & Traffic";
 
   weatherData: any = [];
   routeData: any = null;
@@ -489,7 +489,7 @@ export class HomePage implements OnInit {
     this.routeData = null;
     this.timeInput = -1;
     this.weatherData = []
-    this.titleController = "Mau kemana?";
+    this.titleController = "Weather & Traffic";
     this.esriMapView.graphics.removeAll();
   }
 }

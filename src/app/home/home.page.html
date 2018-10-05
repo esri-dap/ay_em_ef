@@ -26,22 +26,22 @@
       </ion-card-title>
     </ion-card-header>
 
-    <ion-card-content *ngIf="!hasResult">
-      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput" *ngIf="isSearchingAddress == 'origin' || !isSearchingAddress"
-        (click)="cardActive()">
+    <ion-card-content style="padding-bottom: 0px;" *ngIf="!hasResult">
+      <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput"
+        *ngIf="isSearchingAddress == 'origin' || !isSearchingAddress" (click)="cardActive()">
       </input-with-icon-inside>
-      <br />
+
       <ion-list lines="none" *ngFor="let locationOrigin of listOriginLocationSuggestion">
         <list-address [addressName]="locationOrigin.text.split(',')[0]" [addressStreet]="locationOrigin.text" (click)="selectAddress(locationOrigin.magicKey, 'origin')">
         </list-address>
       </ion-list>
     </ion-card-content>
 
-    <ion-card-content *ngIf="!hasResult">
-      <destination-input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')" [(ngModel)]="destinationInput" *ngIf="isSearchingAddress !== 'origin'  || !isSearchingAddress"
-        (click)="cardActive()">
+    <ion-card-content style="padding-bottom: 0px;" *ngIf="!hasResult">
+      <destination-input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')"
+        [(ngModel)]="destinationInput" *ngIf="isSearchingAddress !== 'origin'  || !isSearchingAddress" (click)="cardActive()">
       </destination-input-with-icon-inside>
-      <br />
+
       <ion-list lines="none" *ngFor="let locationDestination of listDestinationLocationSuggestion">
         <list-address [addressName]="locationDestination.text.split(',')[0]" [addressStreet]="locationDestination.text"
           (click)="selectAddress(locationDestination.magicKey, 'destination')">
@@ -50,15 +50,38 @@
     </ion-card-content>
 
     <ion-card-content *ngIf="!hasResult">
-      <ion-item text-wrap>
-        <ion-label position="stacked">Jam Keberangkatan (3 jam sekali)</ion-label>
+      <!-- <ion-item class="input-icon-inside" text-wrap>
+        <ion-label class="input-time-label" position="stacked">When ?</ion-label>
         <br>
         <ion-datetime displayFormat="HH:mm" hourValues="0,3,6,9,12,15,18,21"  minuteValues="0" (ionChange)="queryTravelHour($event)" (click)="cardActive()"></ion-datetime>
+      </ion-item> -->
+      <ion-item class="input-icon-inside">
+        <ion-label class="input-icon-inside-label" position="fixed">
+
+
+          <svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink">
+            <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+            <desc>Created with Sketch.</desc>
+            <defs></defs>
+            <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+              <g id="home/search/option" transform="translate(-25.000000, -527.000000)">
+                <g id="where-to-go-input-cage" transform="translate(23.000000, 514.920418)">
+                  <image id="icons8-watch-64" x="0" y="11" width="18" height="18" xlink:href="data:image/png;base64,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"></image>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </ion-label>
+        <!-- <ion-input placeholder="Your Location" type="_type" debounce=1250 [(ngModel)]="_ngModel"></ion-input> -->
+        <ion-datetime displayFormat="HH:mm" hourValues="0,3,6,9,12,15,18,21" minuteValues="0" (ionChange)="queryTravelHour($event)"
+          (click)="cardActive()"></ion-datetime>
       </ion-item>
-    </ion-card-content> 
+    </ion-card-content>
 
     <ion-card-content *ngIf="hasResult">
-      <ion-img class="loading" [src]="'./../../assets/icon/loading.gif'" *ngIf="hasResult && !routeData"></ion-img>
+      <anim-weather class="anim-weather" *ngIf="hasResult && !routeData"></anim-weather>
+      <!-- <ion-img class="loading" [src]="'./../../assets/icon/loading.gif'" *ngIf="hasResult && !routeData"></ion-img> -->
       <ion-list *ngFor="let route of routeData; let i = index;">
         <list-route [conditionWeather]="weatherData[i]?.condition" [textWeather]="weatherData[i]?.text" [textRoute]="route.attributes.text">
         </list-route>

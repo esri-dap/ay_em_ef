@@ -77,3 +77,16 @@
     height: 200px;
     width: auto;
 }
+
+.anim-weather {
+    height: 272px;
+    width: 300px;
+}
+
+.input-time-label {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #8A8FAB;
+    text-align: left;
+    line-height: 20px;
+}

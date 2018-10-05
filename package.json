@@ -28,6 +28,7 @@
     "@types/arcgis-js-api": "^4.9.0",
     "core-js": "^2.5.3",
     "esri-loader": "^2.5.0",
+    "ng-lottie": "^0.3.2",
     "rxjs": "6.2.2",
     "stream": "0.0.2",
     "timers": "^0.1.1",
