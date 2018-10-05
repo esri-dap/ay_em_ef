@@ -19,10 +19,11 @@
     <ion-card-header>
 
       <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-      <ion-card-title>
-        <ion-button shape="round" fill="outline" size="small" *ngIf="hasResult" (click)="resetStatus()">
-          <ion-icon slot="icon-only" name="arrow-dropleft"></ion-icon>
-        </ion-button>{{titleController}}
+      <ion-button shape="round" fill="clear" *ngIf="hasResult" (click)="resetStatus()">
+          <ion-icon slot="icon-only" name="md-arrow-round-back"></ion-icon>
+        </ion-button>
+      <ion-card-title style="align-items: center; align-content: center; vertical-align: middle">
+        {{titleController}}
       </ion-card-title>
     </ion-card-header>
 
