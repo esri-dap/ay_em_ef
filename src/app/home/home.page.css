@@ -1,5 +1,5 @@
 /* import the required JSAPI css */
-@import 'https://js.arcgis.com/4.8/esri/css/main.css';
+@import 'https://js.arcgis.com/4.9/esri/css/main.css';
 
 .esri-view {
     height: 60vh;
@@ -99,4 +99,8 @@ ion-datetime {
     text-align: left;
     padding-left: 0px;
     line-height: 20px;
+}
+
+ion-card-title {
+    display: inline;
 }

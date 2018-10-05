@@ -17,11 +17,9 @@
   <ion-card class="card-main" id="card-main">
 
     <ion-card-header>
-
-      <!-- <ion-card-subtitle>Card Subtitle</ion-card-subtitle> -->
-      <ion-button shape="round" fill="clear" *ngIf="hasResult" (click)="resetStatus()">
-          <ion-icon slot="icon-only" name="md-arrow-round-back"></ion-icon>
-        </ion-button>
+      <ion-button shape="round" fill="clear" size="small" *ngIf="hasResult" (click)="resetStatus()">
+        <ion-icon slot="icon-only" name="md-arrow-round-back"></ion-icon>
+      </ion-button>
       <ion-card-title style="align-items: center; align-content: center; vertical-align: middle">
         {{titleController}}
       </ion-card-title>
@@ -40,7 +38,7 @@
 
     <ion-card-content style="padding-bottom: 0px;" *ngIf="!hasResult">
       <destination-input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'destination')"
-        [(ngModel)]="destinationInput" *ngIf="isSearchingAddress !== 'origin'  || !isSearchingAddress" (click)="cardActive()">
+        [(ngModel)]="destinationInput" (click)="cardActive()">
       </destination-input-with-icon-inside>
 
       <ion-list lines="none" *ngFor="let locationDestination of listDestinationLocationSuggestion">
@@ -51,19 +49,10 @@
     </ion-card-content>
 
     <ion-card-content *ngIf="!hasResult">
-      <!-- <ion-item class="input-icon-inside" text-wrap>
-        <ion-label class="input-time-label" position="stacked">When ?</ion-label>
-        <br>
-        <ion-datetime displayFormat="HH:mm" hourValues="0,3,6,9,12,15,18,21"  minuteValues="0" (ionChange)="queryTravelHour($event)" (click)="cardActive()"></ion-datetime>
-      </ion-item> -->
-      <ion-item class="input-icon-inside">
+      <ion-item class="input-icon-inside" *ngIf="isSearchingAddress !== 'origin'  || !isSearchingAddress">
         <ion-label class="input-icon-inside-label" position="fixed">
-
-
           <svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink">
-            <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
-            <desc>Created with Sketch.</desc>
             <defs></defs>
             <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
               <g id="home/search/option" transform="translate(-25.000000, -527.000000)">
@@ -74,7 +63,6 @@
             </g>
           </svg>
         </ion-label>
-        <!-- <ion-input placeholder="Your Location" type="_type" debounce=1250 [(ngModel)]="_ngModel"></ion-input> -->
         <ion-datetime placeholder="Time" displayFormat="HH:mm" pickerFormat="HH:mm" hourValues="0,3,6,9,12,15,18,21"
           minuteValues="0" (ionChange)="queryTravelHour($event)" (click)="cardActive()"></ion-datetime>
       </ion-item>
@@ -84,7 +72,6 @@
 
     <ion-card-content *ngIf="hasResult">
       <anim-weather class="anim-weather" *ngIf="hasResult && !routeData"></anim-weather>
-      <!-- <ion-img class="loading" [src]="'./../../assets/icon/loading.gif'" *ngIf="hasResult && !routeData"></ion-img> -->
       <ion-list *ngFor="let route of routeData; let i = index;">
         <list-route [conditionWeather]="weatherData[i]?.condition" [textWeather]="weatherData[i]?.text" [textRoute]="route.attributes.text">
         </list-route>

@@ -3,13 +3,9 @@ import {
   OnInit,
   ViewChild,
   ElementRef,
-  Input,
-  Output,
-  EventEmitter
 } from "@angular/core";
 import { loadModules } from "esri-loader";
 import { EsriGeocodeService } from "../esri-geocode.service";
-import { log } from "util";
 import { parseString } from "xml2js";
 import esri = __esri;
 
@@ -19,50 +15,12 @@ import esri = __esri;
   styleUrls: ["../app.scss", "home.page.css"]
 })
 export class HomePage implements OnInit {
-  // @Output()
-  // mapLoaded = new EventEmitter<esri.MapView>();
   @ViewChild("mapViewNode")
   private mapViewEl: ElementRef;
-
   esriMapView: esri.MapView;
-
-  /**
-   * @private _zoom sets map zoom
-   * @private _center sets map center
-   * @private _basemap sets type of map
-   */
   private _zoom: number = 15;
-  // @Input()
-  // set zoom(zoom: number) {
-  //   this._zoom = zoom;
-  // }
-  // get zoom(): number {
-  //   return this._zoom;
-  // }
-
   private _center: Array<number> = [106.8417027, -6.1560008];
-  // @Input()
-  // set center(center: Array<number>) {
-  //   this._center = center;
-  // }
-  // get center(): Array<number> {
-  //   return this._center;
-  // }
-
-  private _basemap: string = "streets-navigation-vector";
-  // @Input()
-  // set basemap(basemap: string) {
-  //   this._basemap = basemap;
-  // }
-  // get basemap(): string {
-  //   return this._basemap;
-  // }
-
-  addressName = "test";
-  addressLabel = "test";
-  addressStreet =
-    "testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest";
-
+  private _basemap: string = "osm";
   latitude: any;
   longitude: any;
   originInput: string;
@@ -73,17 +31,18 @@ export class HomePage implements OnInit {
   xRef: any;
   yRef: any;
   pointRefs: any;
-
   isSearchingAddress: string = null;
   hasResult: boolean = false;
-
   titleController: string = "Weather & Traffic";
-
   weatherData: any = [];
   routeData: any = null;
 
   constructor(private esriGeocodeService: EsriGeocodeService) {
-    this.initLocation();
+  }
+  
+  async ngOnInit() {
+    await this.initLocation();
+    this.initializeMap();
   }
 
   initLocation() {
@@ -91,8 +50,8 @@ export class HomePage implements OnInit {
       longitude: number = 0;
 
     const options = {
-      enableHighAccuracy: false, // use any allowed location provider
-      timeout: 60000 // it can take quite a while for a cold GPS to warm up
+      enableHighAccuracy: false,
+      timeout: 60000
     };
     navigator.geolocation.watchPosition(
       position => {
@@ -118,6 +77,42 @@ export class HomePage implements OnInit {
       },
       options
     );
+  }
+
+  async initializeMap() {
+    try {
+      const [EsriMap, EsriMapView, EsriMapImageLayer] = await loadModules([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/MapImageLayer"
+      ]);
+
+      const mapProperties: esri.MapProperties = {
+        basemap: this._basemap
+      };
+
+      const trafficProperties: esri.MapImageLayerProperties = {
+        url:
+          "https://utility.arcgis.com/usrsvcs/appservices/XAtxezTwqMmmQ7r7/rest/services/World/Traffic/MapServer"
+      };
+
+      const map: esri.Map = new EsriMap(mapProperties);
+      const traffic: esri.MapImageLayer = new EsriMapImageLayer(
+        trafficProperties
+      );
+      
+      const mapViewProperties: esri.MapViewProperties = {
+        container: this.mapViewEl.nativeElement,
+        center: this._center,
+        zoom: this._zoom,
+        map: map
+      };
+
+      map.add(traffic);
+      this.esriMapView = new EsriMapView(mapViewProperties);
+    } catch (error) {
+      console.error("Error on Initializing Map: " + error);
+    }
   }
 
   queryStreet(input, type) {
@@ -202,49 +197,6 @@ export class HomePage implements OnInit {
     );
   }
 
-  async initializeMap() {
-    try {
-      const [EsriMap, EsriMapView, EsriMapImageLayer] = await loadModules([
-        "esri/Map",
-        "esri/views/MapView",
-        "esri/layers/MapImageLayer"
-      ]);
-
-      // Set type of map
-      const mapProperties: esri.MapProperties = {
-        basemap: this._basemap
-      };
-
-      const trafficProperties: esri.MapImageLayerProperties = {
-        url:
-          "https://utility.arcgis.com/usrsvcs/appservices/XAtxezTwqMmmQ7r7/rest/services/World/Traffic/MapServer"
-      };
-
-      const map: esri.Map = new EsriMap(mapProperties);
-      const traffic: esri.MapImageLayer = new EsriMapImageLayer(
-        trafficProperties
-      );
-      // Set type of map view
-      const mapViewProperties: esri.MapViewProperties = {
-        container: this.mapViewEl.nativeElement,
-        center: this._center,
-        zoom: this._zoom,
-        map: map
-      };
-
-      map.add(traffic);
-      this.esriMapView = new EsriMapView(mapViewProperties);
-
-      // All resources in the MapView and the map have loaded.
-      // Now execute additional processes
-      // this.esriMapView.when(() => {
-      //   this.mapLoaded.emit(this.esriMapView);
-      // });
-    } catch (error) {
-      console.error("Error on Initializing Map: " + error);
-    }
-  }
-
   async drawPoint(pointRefs: Array<number>, type) {
     try {
       const [EsriGraphic, EsriPoint] = await loadModules([
@@ -273,8 +225,6 @@ export class HomePage implements OnInit {
           graphicOriginProperties
         );
 
-        // All resources in the MapView and the map have loaded.
-        // Now execute additional processes
         this.esriMapView.graphics.add(graphicOrigin);
         this.esriMapView.goTo([pointRefs[1], pointRefs[0]]);
       } else {
@@ -301,8 +251,6 @@ export class HomePage implements OnInit {
           graphicDestinationProperties
         );
 
-        // All resources in the MapView and the map have loaded.
-        // Now execute additional processes
         this.esriMapView.graphics.add(graphicDestination);
       }
       this.cardDeactive();
@@ -452,10 +400,6 @@ export class HomePage implements OnInit {
       }
     });
     this.routeData = features;
-  }
-
-  ngOnInit() {
-    this.initializeMap();
   }
 
   cardActive() {
