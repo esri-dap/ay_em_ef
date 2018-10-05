@@ -26,7 +26,7 @@
       </ion-card-title>
     </ion-card-header>
 
-    <ion-card-content style="padding-bottom: 0px;" *ngIf="!hasResult">
+    <ion-card-content style="padding-bottom: 0px; padding-top: 5px;" *ngIf="!hasResult">
       <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput"
         *ngIf="isSearchingAddress == 'origin' || !isSearchingAddress" (click)="cardActive()">
       </input-with-icon-inside>
@@ -74,9 +74,41 @@
           </svg>
         </ion-label>
         <!-- <ion-input placeholder="Your Location" type="_type" debounce=1250 [(ngModel)]="_ngModel"></ion-input> -->
-        <ion-datetime displayFormat="HH:mm" hourValues="0,3,6,9,12,15,18,21" minuteValues="0" (ionChange)="queryTravelHour($event)"
-          (click)="cardActive()"></ion-datetime>
+        <ion-datetime placeholder="Time" displayFormat="Around HH:mm" pickerFormat="Around HH:mm" hourValues="0,3,6,9,12,15,18,21"
+          minuteValues="0" (ionChange)="queryTravelHour($event)" (click)="cardActive()"></ion-datetime>
       </ion-item>
+      <br />
+
+      <div style="width: inherit; height: auto; align-content: center; align-items: center; text-align: center">
+        <svg width="234px" height="48px" viewBox="0 0 234 48" version="1.1" xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink">
+          <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+          <desc>Created with Sketch.</desc>
+          <defs>
+            <filter x="-3.1%" y="-12.5%" width="106.2%" height="135.0%" filterUnits="objectBoundingBox" id="filter-1">
+              <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+              <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+              <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"
+                result="shadowMatrixOuter1"></feColorMatrix>
+              <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+              </feMerge>
+            </filter>
+          </defs>
+          <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+            <g id="home/search/option" transform="translate(-71.000000, -601.000000)">
+              <g id="Group-5" filter="url(#filter-1)" transform="translate(75.000000, 603.000000)">
+                <path d="M20,0 L206,0 C217.045695,-2.02906125e-15 226,8.954305 226,20 L226,40 L20,40 C8.954305,40 1.3527075e-15,31.045695 0,20 L0,20 C-1.3527075e-15,8.954305 8.954305,2.02906125e-15 20,0 Z"
+                  id="Rectangle" fill="#27AE60" fill-rule="nonzero"></path>
+                <text id="Go-!" font-family="Montserrat-ExtraBold, Montserrat" font-size="18" font-weight="600" fill="#FFFFFF">
+                  <tspan x="93.128" y="26">GO !</tspan>
+                </text>
+              </g>
+            </g>
+          </g>
+        </svg>
+      </div>
     </ion-card-content>
 
     <ion-card-content *ngIf="hasResult">
