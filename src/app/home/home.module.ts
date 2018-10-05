@@ -8,20 +8,30 @@ import { HomePage } from './home.page';
 import { InputWithIconInsideComponent } from '../input-with-icon-inside/input-with-icon-inside.component';
 import { ListAddressComponent } from '../list-address/list-address.component';
 import { ListRouteComponent } from '../list-route/list-route.component';
-import { DestinationInputWithIconInsideComponent } from '../destination-input-with-icon-inside/destination-input-with-icon-inside.component'
+import { DestinationInputWithIconInsideComponent } from '../destination-input-with-icon-inside/destination-input-with-icon-inside.component';
+import { LottieAnimationViewModule } from 'ng-lottie';
+import { AnimWeatherComponent } from '../anim-weather/anim-weather.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
+	imports: [
+		CommonModule,
+		FormsModule,
     IonicModule,
-    RouterModule.forChild([
-      {
-        path: '',
-        component: HomePage
-      }
-    ])
-  ],
-  declarations: [HomePage, InputWithIconInsideComponent, DestinationInputWithIconInsideComponent, ListAddressComponent, ListRouteComponent]
+    LottieAnimationViewModule.forRoot(),
+		RouterModule.forChild([
+			{
+				path: '',
+				component: HomePage
+			}
+		])
+	],
+	declarations: [
+		HomePage,
+		InputWithIconInsideComponent,
+		DestinationInputWithIconInsideComponent,
+		ListAddressComponent,
+    ListRouteComponent,
+		AnimWeatherComponent
+	]
 })
 export class HomePageModule {}
