@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  ElementRef,
-} from "@angular/core";
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
 import { loadModules } from "esri-loader";
 import { EsriGeocodeService } from "../esri-geocode.service";
 import { parseString } from "xml2js";
@@ -36,10 +31,11 @@ export class HomePage implements OnInit {
   titleController: string = "Weather & Traffic";
   weatherData: any = [];
   routeData: any = null;
+  totalKiloMeters: number;
+  totalTime: number;
 
-  constructor(private esriGeocodeService: EsriGeocodeService) {
-  }
-  
+  constructor(private esriGeocodeService: EsriGeocodeService) {}
+
   async ngOnInit() {
     await this.initLocation();
     this.initializeMap();
@@ -100,7 +96,7 @@ export class HomePage implements OnInit {
       const traffic: esri.MapImageLayer = new EsriMapImageLayer(
         trafficProperties
       );
-      
+
       const mapViewProperties: esri.MapViewProperties = {
         container: this.mapViewEl.nativeElement,
         center: this._center,
@@ -277,8 +273,8 @@ export class HomePage implements OnInit {
           features: this.esriMapView.graphics
         }),
         returnDirections: true,
-        directionsLengthUnits: "meters",
-        directionsLanguage: "ID_ID"
+        directionsLengthUnits: "kilometers",
+        directionsLanguage: "id"
       };
 
       var routeTaskProperties: esri.RouteTaskProperties = {
@@ -311,6 +307,9 @@ export class HomePage implements OnInit {
 
   async showDirection(data: any) {
     var features = data.routeResults[0].directions.features;
+    this.totalKiloMeters =
+      data.routeResults[0].route.attributes.Total_Kilometers;
+    this.totalTime = data.routeResults[0].route.attributes.Total_TravelTime;
     await features.forEach(async feature => {
       var extent = this.getQueryStringByExtent(feature.geometry.extent);
       let requestString =
@@ -337,7 +336,8 @@ export class HomePage implements OnInit {
               });
             } else {
               switch (
-                resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.weather
+                resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                  .weather
               ) {
                 case "10":
                   weatherReadable = "Cerah";
@@ -386,7 +386,8 @@ export class HomePage implements OnInit {
               }
               this.weatherData.push({
                 condition:
-                  resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.weather,
+                  resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                    .weather,
                 text: weatherReadable
               });
             }
@@ -432,7 +433,7 @@ export class HomePage implements OnInit {
     this.destinationInput = null;
     this.routeData = null;
     this.timeInput = -1;
-    this.weatherData = []
+    this.weatherData = [];
     this.titleController = "Weather & Traffic";
     this.esriMapView.graphics.removeAll();
   }
