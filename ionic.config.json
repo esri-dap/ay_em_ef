@@ -1,6 +1,8 @@
 {
   "name": "ay_em_ef",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "angular",
   "pro_id": "6360d688"
 }
