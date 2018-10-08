@@ -15,7 +15,7 @@ export class HomePage implements OnInit {
   esriMapView: esri.MapView;
   private _zoom: number = 15;
   private _center: Array<number> = [106.8417027, -6.1560008];
-  private _basemap: string = "osm";
+  private _basemap: string = "streets-navigation-vector";
   latitude: any;
   longitude: any;
   originInput: string;
@@ -33,12 +33,164 @@ export class HomePage implements OnInit {
   routeData: any = null;
   totalKiloMeters: number;
   totalTime: number;
+  listKabupaten: number[] = [
+    5005587,
+    5005588,
+    5005617,
+    5005618,
+    5005619,
+    5005620,
+    5005621,
+    5005622,
+    5005623,
+    5005624,
+    5005609,
+    5005610,
+    5005611,
+    5005612,
+    5005613,
+    5005614,
+    5005615,
+    5005616,
+    5005589,
+    5005590,
+    5005591,
+    5005592,
+    5005593,
+    5005594,
+    5005595,
+    5005596,
+    5005597,
+    5005598,
+    5005599,
+    5005600,
+    5005601,
+    5005602,
+    5005603,
+    5005604,
+    5005605,
+    5005606,
+    5005607,
+    5005608,
+    5005625,
+    5005626,
+    5005627,
+    5005628,
+    5005629,
+    5005630,
+    5007825,
+    5007827,
+    5007828,
+    5007829,
+    5007830,
+    5007876,
+    5007882,
+    5007883,
+    5007884,
+    5007899,
+    5007900,
+    5007902,
+    5007905,
+    5007831,
+    5007832,
+    5007833,
+    5007834,
+    5007886,
+    5007895,
+    5002263,
+    5007836,
+    5007837,
+    5007838,
+    5007839,
+    5007840,
+    5007841,
+    5007842,
+    5007843,
+    5007879,
+    5007891,
+    5007892,
+    5007904,
+    5007906,
+    5007835,
+    5007844,
+    5007845,
+    5007846,
+    5007847,
+    5007848,
+    5007909,
+    5007912,
+    5002289,
+    5002290,
+    5002291,
+    5007849,
+    5007850,
+    5007875,
+    5007910,
+    5007911,
+    5007851,
+    5007852,
+    5007853,
+    5007854,
+    5007855,
+    5007856,
+    5007857,
+    5007887,
+    5007888,
+    5007889,
+    5007890,
+    5007897,
+    5007898,
+    5007901,
+    5007903,
+    5007907,
+    5007858,
+    5007859,
+    5007860,
+    5007861,
+    5007885,
+    5007896,
+    5007862,
+    5007863,
+    5007864,
+    5007865,
+    5007866,
+    5007867,
+    5007868,
+    5007869,
+    5007870,
+    5007880,
+    5007881,
+    5007894,
+    5007908,
+    5007871,
+    5007872,
+    5007873,
+    5007874
+  ];
+  nowHour: number;
 
   constructor(private esriGeocodeService: EsriGeocodeService) {}
 
-  async ngOnInit() {
-    await this.initLocation();
+  ngOnInit() {
     this.initializeMap();
+    let date = new Date();
+    if (date.getHours() >= 0 && date.getHours() < 3) {
+      this.nowHour = 0;
+    } else if (date.getHours() >= 3 && date.getHours() < 6) {
+      this.nowHour = 1;
+    } else if (date.getHours() >= 6 && date.getHours() < 9) {
+      this.nowHour = 2;
+    } else if (date.getHours() >= 9 && date.getHours() < 12) {
+      this.nowHour = 3;
+    } else if (date.getHours() >= 12 && date.getHours() < 15) {
+      this.nowHour = 4;
+    } else if (date.getHours() >= 15 && date.getHours() < 18) {
+      this.nowHour = 5;
+    } else if (date.getHours() >= 18 && date.getHours() < 21) {
+      this.nowHour = 6;
+    } else {
+      this.nowHour = 0;
+    }
   }
 
   initLocation() {
@@ -105,9 +257,117 @@ export class HomePage implements OnInit {
       };
 
       map.add(traffic);
-      this.esriMapView = new EsriMapView(mapViewProperties);
+      this.esriMapView = await new EsriMapView(mapViewProperties);
+      await this.getAllWeather();
+      this.initLocation();
     } catch (error) {
       console.error("Error on Initializing Map: " + error);
+    }
+  }
+
+  async getAllWeather() {
+    try {
+      const [EsriGraphic, EsriPoint] = await loadModules([
+        "esri/Graphic",
+        "esri/geometry/Point"
+      ]);
+      this.listKabupaten.forEach(kabupaten => {
+        this.esriGeocodeService
+          .getWeatherData(kabupaten)
+          .toPromise()
+          .then(res => {
+            parseString(res, (errorParseXML, resultParseXML) => {
+              if (errorParseXML) {
+                throw "Gagal parse XML";
+              }
+              var x = Number(resultParseXML.data.area[0].$.lat);
+              var y = Number(resultParseXML.data.area[0].$.lon);
+              var pointProp: esri.PointProperties = {
+                longitude: y,
+                latitude: x,
+                spatialReference: { wkid: 4326 }
+              };
+              var geometry: esri.Point = new EsriPoint(pointProp);
+              var symbol = {
+                type: "picture-marker",
+                url:
+                  "http://" +
+                  window.location.host +
+                  "/assets/icon/cuaca/" +
+                  (resultParseXML.data.area[0].hourly[0] !== ""
+                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
+                        .$.weather
+                    : "100") +
+                  ".png",
+                width: "60px",
+                height: "60px"
+              };
+              var attributes = {
+                Humidity:
+                  (resultParseXML.data.area[0].hourly[0] !== ""
+                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
+                        .$.hu
+                    : "Not found") + " grams per cubic meter",
+                Temperature:
+                  (resultParseXML.data.area[0].hourly[0] !== ""
+                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
+                        .$.t_c
+                    : "Not found") + " celcius",
+                "Wind Direction":
+                  resultParseXML.data.area[0].hourly[0] !== ""
+                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
+                        .$.wd_card
+                    : "Not found",
+                "Wind Speed":
+                  (resultParseXML.data.area[0].hourly[0] !== ""
+                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
+                        .$.ws_kph
+                    : "Not found") + " kph"
+              };
+              var graphic = new EsriGraphic({
+                geometry,
+                symbol,
+                attributes,
+                popupTemplate: {
+                  title: resultParseXML.data.area[0].$.kec,
+                  content:
+                    "Humadity : " +
+                    (resultParseXML.data.area[0].hourly[0]
+                      ? resultParseXML.data.area[0].hourly[0].param[
+                          this.nowHour
+                        ].$.hu
+                      : "-") +
+                    " grams per cubic meter<br> Temperature : " +
+                    (resultParseXML.data.area[0].hourly[0]
+                      ? resultParseXML.data.area[0].hourly[0].param[
+                          this.nowHour
+                        ].$.t_c
+                      : "-") +
+                    " celcius<br> Wind Direction : " +
+                    (resultParseXML.data.area[0].hourly[0]
+                      ? resultParseXML.data.area[0].hourly[0].param[
+                          this.nowHour
+                        ].$.wd_card
+                      : "-") +
+                    "<br>Wind Speed : " +
+                    (resultParseXML.data.area[0].hourly[0]
+                      ? resultParseXML.data.area[0].hourly[0].param[
+                          this.nowHour
+                        ].$.ws_kph
+                      : "-") +
+                    " kph"
+                }
+              });
+              this.esriMapView.graphics.add(graphic);
+            });
+          })
+          .catch(err => {
+            console.error("Error", err);
+          });
+      });
+    } catch(err) {
+      console.error("Error", err);
+      
     }
   }
 
@@ -175,6 +435,7 @@ export class HomePage implements OnInit {
           this.yRef = res["candidates"][0]["location"]["y"];
           this.pointRefs = [this.yRef, this.xRef];
           this.drawPoint(this.pointRefs, "origin");
+          this.esriMapView.graphics.removeAll()
         } else {
           this.listDestinationLocationSuggestion = null;
           this.destinationInput =
@@ -411,7 +672,7 @@ export class HomePage implements OnInit {
   cardDeactive() {
     let inputIcon = document.getElementById("card-main");
     inputIcon.style.height = "50vh";
-    if (this.esriMapView.graphics.length > 1 && this.timeInput > -1) {
+    if (this.originInput && this.destinationInput && this.timeInput > -1) {
       this.getRoute();
     }
   }
