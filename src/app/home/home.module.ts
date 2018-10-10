@@ -11,6 +11,7 @@ import { ListRouteComponent } from '../list-route/list-route.component';
 import { DestinationInputWithIconInsideComponent } from '../destination-input-with-icon-inside/destination-input-with-icon-inside.component';
 import { LottieAnimationViewModule } from 'ng-lottie';
 import { AnimWeatherComponent } from '../anim-weather/anim-weather.component';
+import { TitleControllerComponent } from '../title-controller/title-controller.component';
 
 @NgModule({
 	imports: [
@@ -31,7 +32,8 @@ import { AnimWeatherComponent } from '../anim-weather/anim-weather.component';
 		DestinationInputWithIconInsideComponent,
 		ListAddressComponent,
     ListRouteComponent,
-		AnimWeatherComponent
+		AnimWeatherComponent,
+		TitleControllerComponent
 	]
 })
 export class HomePageModule {}

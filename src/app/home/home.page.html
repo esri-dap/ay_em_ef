@@ -16,13 +16,17 @@
 
   <ion-card class="card-main" id="card-main">
 
-    <ion-card-header>
+    <!-- <ion-card-header>
       <ion-button shape="round" fill="clear" size="small" *ngIf="hasResult" (click)="resetStatus()">
         <ion-icon slot="icon-only" name="md-arrow-round-back"></ion-icon>
       </ion-button>
       <ion-card-title style="align-items: center; align-content: center; vertical-align: middle">
         {{titleController}}
       </ion-card-title>
+    </ion-card-header> -->
+    <ion-card-header>
+      <title-controller title="Test" btnIcon="list">
+      </title-controller>
     </ion-card-header>
 
     <ion-card-content style="padding-bottom: 0px; " *ngIf="!hasResult">

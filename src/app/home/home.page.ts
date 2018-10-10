@@ -253,7 +253,17 @@ export class HomePage implements OnInit {
         container: this.mapViewEl.nativeElement,
         center: this._center,
         zoom: this._zoom,
-        map: map
+        map: map,
+        popup: {
+          dockEnabled: true,
+          dockOptions: {
+            // Disables the dock button from the popup
+            buttonEnabled: false,
+            // Ignore the default sizes that trigger responsive docking
+            breakpoint: false,
+            position: "top-right"
+          }
+        },
       };
 
       map.add(traffic);
