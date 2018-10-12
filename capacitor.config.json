@@ -1,0 +1,6 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "BMKG - Weather & Traffic",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}

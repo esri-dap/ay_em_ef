@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main"><source path="/Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/CordovaLib/src/main/jniLibs"/></dataSet><dataSet config="debug"><source path="/Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/CordovaLib/src/debug/jniLibs"/></dataSet></merger>

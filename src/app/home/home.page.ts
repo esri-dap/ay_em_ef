@@ -4,6 +4,10 @@ import { EsriGeocodeService } from '../esri-geocode.service';
 import { parseString } from 'xml2js';
 import esri = __esri;
 
+import { Plugins } from '@capacitor/core';
+
+const { Geolocation } = Plugins;
+
 @Component({
 	selector: 'app-home',
 	templateUrl: 'home.page.html',

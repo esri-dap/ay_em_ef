@@ -1,0 +1,4 @@
+#Fri Oct 12 15:00:46 WIB 2018
+base.0=/Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/build/intermediates/transforms/dex/release/0
+renamed.0=classes.dex
+file.0=/Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/build/intermediates/transforms/dex/release/0/classes.dex

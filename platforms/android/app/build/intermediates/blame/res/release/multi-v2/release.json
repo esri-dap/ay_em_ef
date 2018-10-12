@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "/Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/build/intermediates/res/merged/release/values_values.arsc.flat",
+            "map": [
+                {
+                    "source": "/Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/res/values/strings.xml",
+                    "from": {
+                        "startLines": "4,2,3",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "189,55,130",
+                        "endColumns": "63,74,58",
+                        "endOffsets": "248,125,184"
+                    },
+                    "to": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,119,194",
+                        "endColumns": "63,74,58",
+                        "endOffsets": "114,189,248"
+                    }
+                }
+            ]
+        }
+    ]
+}
