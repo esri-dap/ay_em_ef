@@ -11,13 +11,13 @@
     left: 0;
     right: 0;
     margin: auto;
-    -moz-border-radius: 20px,20px,0,0;
-    -webkit-border-radius: 20px,20px,0,0;
+    -moz-border-radius: 20px, 20px, 0, 0;
+    -webkit-border-radius: 20px, 20px, 0, 0;
     border-radius: 20px, 20px, 0, 0;
     background-clip: padding-box;
-    -webkit-box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-    -moz-box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
-    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);
+    -webkit-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     height: 50vh;
     width: 100vw;
     background-color: rgba(255, 255, 255, 1);
@@ -103,4 +103,102 @@ ion-datetime {
 
 ion-card-title {
     display: inline;
+}
+
+ion-card.adv-map p {
+    font-size: 0.7em !important;
+}
+
+button[fab].fab-map {
+    top: calc(100% - 35px);
+    z-index: 50;
+}
+
+.item-bold {
+    font-weight: bold;
+}
+
+ion-content.cards-bg {
+    background-color: #f4f4f7;
+}
+
+.info-card {
+    width: 85vw;
+    /* margin: 0 auto; */
+    /* position: relative; */
+    /* top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%); */
+}
+
+.bg-img {
+    height: 260px;
+    position: relative;
+}
+
+.bg-img img {
+    height: 100%;
+    margin: auto;
+    display: block;
+    box-shadow: 0 5px 10px #1d77fa;
+}
+
+.city-text {
+    font-weight: 800;
+    font-size: 36px;
+    border: 6px solid white;
+    color: white;
+    padding: 10px;
+    position: relative;
+    top: -180px;
+    width: 50%;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.stats {
+    box-shadow: 0 5px 10px #fafafa;
+    background-color: white;
+    height: 85px;
+    width: auto;
+    border-radius: 10px;
+    /* margin: 0 auto; */
+    /* position: relative;
+    top: -130px; */
+}
+
+.stats ul {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 100%;
+}
+
+.heading {
+    color: gray;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    margin-bottom: 10px;
+}
+
+.footing {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.btn {
+    background-color: #81B3FC;
+    color: white;
+    font-weight: 300;
+    box-shadow: 0 5px 10px #1d77fa;
+    padding: 15px;
+    border-radius: 50px;
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+    /* position: relative;
+    top: -25px; */
+    text-transform: uppercase;
 }
