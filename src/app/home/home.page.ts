@@ -28,6 +28,7 @@ export class HomePage implements OnInit {
 	isSearchingAddress: string = null;
 	hasResult: boolean = false;
 	titleController: string = 'Weather & Traffic';
+	iconController: string = 'list';
 	weatherData: any = [];
 	routeData: any = null;
 	totalKiloMeters: number;
@@ -492,7 +493,8 @@ export class HomePage implements OnInit {
 	}
 
 	async getRoute() {
-		this.titleController = 'Route Direction';
+		this.titleController = 'Route Information';
+		this.iconController = 'arrow-back';
 		this.hasResult = true;
 		try {
 			const [ EsriRouteTask, EsriRouteParameters, EsriFeatureSet ] = await loadModules([
@@ -655,6 +657,7 @@ export class HomePage implements OnInit {
 		this.timeInput = -1;
 		this.weatherData = [];
 		this.titleController = 'Weather & Traffic';
+		this.iconController = 'list';
 		this.esriMapView.graphics.removeAll();
 	}
 }
