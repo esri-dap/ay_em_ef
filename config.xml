@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="io.ionic.starter" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Traffic Analysis</name>
-    <description>BMKG Application anylys traffic with weather</description>
-    <author email="support@esriindonesia.co.id" href="https://esriindonesia.co.id/">Esriindonesia</author>
+    <name>BMKG - Weather and Traffic Prediction</name>
+    <description>Weather and Traffic Analysis Prediction for BMKG</description>
+    <author email="support@esriindonesia.co.id" href="https://esriindonesia.co.id/">Esri Indonesia</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -82,8 +82,4 @@
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^2.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-<<<<<<< HEAD
-    <engine name="android" spec="^7.1.1" />
-=======
->>>>>>> 49ba3f6f8e5969eb24f868854f441d760f8f02cf
 </widget>
