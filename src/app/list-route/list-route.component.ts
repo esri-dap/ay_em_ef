@@ -34,6 +34,15 @@ export class ListRouteComponent implements OnInit {
     return this._conditionWeather;
   }
 
+  private _iconDirection: string = "./../../assets/icon/direction/esriDMTUnknown.png";
+  @Input()
+  set iconDirection(iconDirection: string) {
+    this._iconDirection = "./../../assets/icon/direction/"+iconDirection+".png";
+  }
+  get iconDirection(): string {
+    return this._iconDirection;
+  }
+
   // private _imgCuaca: string;
   // @Input()
   // set imgCuaca(imgCuaca: string) {
