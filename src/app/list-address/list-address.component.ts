@@ -7,7 +7,7 @@ import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter }
 })
 export class ListAddressComponent implements OnInit {
 
-  private _addressName: string;
+  public _addressName: string;
   @Input()
   set addressName(addressName: string) {
     this._addressName = addressName;
@@ -16,7 +16,7 @@ export class ListAddressComponent implements OnInit {
     return this._addressName;
   }
 
-  private _addressStreet: string;
+  public _addressStreet: string;
   @Input()
   set addressStreet(addressStreet: string) {
     this._addressStreet = addressStreet;
@@ -25,7 +25,7 @@ export class ListAddressComponent implements OnInit {
     return this._addressStreet;
   }
 
-  // private _addressLabel: string;
+  // public _addressLabel: string;
   // @Input()
   // set addressLabel(addressLabel: string) {
   //   this._addressLabel = addressLabel;

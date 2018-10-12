@@ -7,7 +7,7 @@ import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter }
 })
 export class DestinationInputWithIconInsideComponent implements OnInit {
 
-  private _type: string;
+  public _type: string;
   @Input()
   set type(type: string) {
     this._type = type;
@@ -17,7 +17,7 @@ export class DestinationInputWithIconInsideComponent implements OnInit {
   }
 
 
-  // private _ionInput: string;
+  // public _ionInput: string;
   // @Input()
   // set ionInput(ionInput: string) {
   //   this._ionInput = ionInput;
@@ -27,7 +27,7 @@ export class DestinationInputWithIconInsideComponent implements OnInit {
   // }
 
 
-  private _ngModel: string;
+  public _ngModel: string;
   @Input()
   set ngModel(ngModel: string) {
     this._ngModel = ngModel;

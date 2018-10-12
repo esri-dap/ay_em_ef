@@ -7,7 +7,7 @@ import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter }
 })
 export class ListRouteComponent implements OnInit {
 
-  private _textRoute: string = "Rute";
+  public _textRoute: string = "Rute";
   @Input()
   set textRoute(textRoute: string) {
     this._textRoute = textRoute;
@@ -16,7 +16,7 @@ export class ListRouteComponent implements OnInit {
     return this._textRoute;
   }
 
-  private _textWeather: string = "Cuaca";
+  public _textWeather: string = "Cuaca";
   @Input()
   set textWeather(textWeather: string) {
     this._textWeather = textWeather;
@@ -25,7 +25,7 @@ export class ListRouteComponent implements OnInit {
     return this._textWeather;
   }
 
-  private _conditionWeather: string = "./../../assets/icon/cuaca/10-pm.png";
+  public _conditionWeather: string = "./../../assets/icon/cuaca/10-pm.png";
   @Input()
   set conditionWeather(conditionWeather: string) {
     this._conditionWeather = "./../../assets/icon/cuaca/"+conditionWeather+".png";
@@ -34,7 +34,7 @@ export class ListRouteComponent implements OnInit {
     return this._conditionWeather;
   }
 
-  private _iconDirection: string = "./../../assets/icon/direction/esriDMTUnknown.png";
+  public _iconDirection: string = "./../../assets/icon/direction/esriDMTUnknown.png";
   @Input()
   set iconDirection(iconDirection: string) {
     this._iconDirection = "./../../assets/icon/direction/"+iconDirection+".png";

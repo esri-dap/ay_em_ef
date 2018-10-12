@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class TitleControllerComponent implements OnInit {
 
-  private _title: string = "Weather Prediction";
+  public _title: string = "Weather Prediction";
   @Input()
   set title(title: string) {
     this._title = title;
@@ -16,7 +16,7 @@ export class TitleControllerComponent implements OnInit {
     return this._title;
   }
 
-  private _btnIcon: string = "list";
+  public _btnIcon: string = "list";
   @Input()
   set btnIcon(btnIcon: string) {
     this._btnIcon = btnIcon;
