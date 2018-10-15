@@ -1,29 +1,8 @@
-<!-- <ion-header>
-  <ion-toolbar>
-    <ion-title>
-      Ionic Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header> -->
-
-<!-- <ion-list lines="none">
-    <list-route>
-    </list-route>
-  </ion-list> -->
-
 <ion-content>
   <div #mapViewNode></div>
 
   <ion-card class="card-main" id="card-main">
 
-    <!-- <ion-card-header>
-      <ion-button shape="round" fill="clear" size="small" *ngIf="hasResult" (click)="resetStatus()">
-        <ion-icon slot="icon-only" name="md-arrow-round-back"></ion-icon>
-      </ion-button>
-      <ion-card-title style="align-items: center; align-content: center; vertical-align: middle">
-        {{titleController}}
-      </ion-card-title>
-    </ion-card-header> -->
     <ion-card-header>
       <title-controller (click)="resetStatus()" title="{{titleController}}" btnIcon="{{iconController}}">
       </title-controller>
@@ -31,7 +10,7 @@
 
     <ion-card-content style="padding-bottom: 0px; " *ngIf="!hasResult">
       <input-with-icon-inside id="inputIcon" [type]="text" (ionChange)="queryStreet($event, 'origin')" [(ngModel)]="originInput"
-        *ngIf="isSearchingAddress == 'origin' || !isSearchingAddress" (click)="cardActive()">
+        (click)="cardActive()">
       </input-with-icon-inside>
 
       <ion-list lines="none" *ngFor="let locationOrigin of listOriginLocationSuggestion">
@@ -53,7 +32,7 @@
     </ion-card-content>
 
     <ion-card-content *ngIf="!hasResult">
-      <ion-item class="input-icon-inside" *ngIf="isSearchingAddress !== 'origin'  || !isSearchingAddress">
+      <ion-item class="input-icon-inside">
         <ion-label class="input-icon-inside-label" position="fixed">
           <svg width="15px" height="16px" viewBox="0 0 15 16" version="1.1" xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink">
