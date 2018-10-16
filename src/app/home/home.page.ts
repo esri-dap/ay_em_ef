@@ -391,7 +391,7 @@ export class HomePage implements OnInit {
       this.timeInput = 4;
     } else if (input.target.value.hour.value >= 15 && input.target.value.hour.value < 18) {
       this.timeInput = 5;
-    } else if (input.target.value.hour.value >= 18 && input.target.value.hour.value < 21) {
+    } else if (input.target.value.hour.value >= 18 && input.target.value.hour.value < 24) {
       this.timeInput = 6;
     } else {
       this.timeInput = -1;
