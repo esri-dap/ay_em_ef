@@ -379,37 +379,22 @@ export class HomePage implements OnInit {
   }
 
   queryTravelHour(input) {
-    switch (input.target.value.hour.value) {
-      case 0:
-        this.timeInput = 0;
-        break;
-      case 3:
-        this.timeInput = 1;
-        break;
-      case 6:
-        this.timeInput = 2;
-        break;
-      case 9:
-        this.timeInput = 3;
-        break;
-      case 9:
-        this.timeInput = 4;
-        break;
-      case 12:
-        this.timeInput = 5;
-        break;
-      case 15:
-        this.timeInput = 6;
-        break;
-      case 18:
-        this.timeInput = 7;
-        break;
-      case 21:
-        this.timeInput = 8;
-        break;
-      default:
-        this.timeInput = -1;
-        break;
+    if (input.target.value.hour.value >= 0 && input.target.value.hour.value < 3) {
+      this.timeInput = 0;
+    } else if (input.target.value.hour.value >= 3 && input.target.value.hour.value < 6) {
+      this.timeInput = 1;
+    } else if (input.target.value.hour.value >= 6 && input.target.value.hour.value < 9) {
+      this.timeInput = 2;
+    } else if (input.target.value.hour.value >= 9 && input.target.value.hour.value < 12) {
+      this.timeInput = 3;
+    } else if (input.target.value.hour.value >= 12 && input.target.value.hour.value < 15) {
+      this.timeInput = 4;
+    } else if (input.target.value.hour.value >= 15 && input.target.value.hour.value < 18) {
+      this.timeInput = 5;
+    } else if (input.target.value.hour.value >= 18 && input.target.value.hour.value < 21) {
+      this.timeInput = 6;
+    } else {
+      this.timeInput = -1;
     }
     this.cardDeactive();
   }

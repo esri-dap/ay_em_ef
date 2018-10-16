@@ -55,32 +55,7 @@
 
     <ion-card-content *ngIf="hasResult">
       <anim-weather class="anim-weather" *ngIf="hasResult && !routeData"></anim-weather>
-
-      <!-- <ion-card class="adv-map" *ngIf="routeData">
-        <ion-item>
-          <ion-icon color="subtle" large item-start name='football'></ion-icon>
-          <h2>{{totalKiloMeters}} km</h2>
-          <p>Distance</p>
-        </ion-item>
-        <ion-item>
-          <ion-icon color="subtle" large item-start name='wine'></ion-icon>
-          <h2>{{totalTime}} minutes</h2>
-          <p>Travel Time</p>
-        </ion-item>
-      </ion-card> -->
-
-      <!-- <ion-list *ngIf="routeData">
-        <ion-item>
-          <ion-avatar item-start>
-            <img src="img/avatar-cher.png">
-          </ion-avatar>
-          <h2>{{totalKiloMeters}} km</h2>
-          <p>Distance</p>
-        </ion-item>
-      </ion-list> -->
-
       <div class="info-card" *ngIf="routeData">
-
         <div class="stats">
           <ul>
             <li>
@@ -92,26 +67,8 @@
               <p class="footing">{{totalTime | number : '1.0-0'}} mins.</p>
             </li>
           </ul>
-          <!-- <div class="btn">Route Information</div> -->
         </div>
       </div>
-
-      <!-- <ion-grid *ngIf="routeData">
-        <ion-row>
-          <ion-col>
-            <ion-card>
-              DISTANCE<br>
-              {{totalKiloMeters}} km
-            </ion-card>
-          </ion-col>
-          <ion-col>
-            <ion-card>
-              TIME<br>
-              {{totalTime}} minutes
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid> -->
       <ion-list *ngFor="let route of routeData; let i = index;">
         <list-route [conditionWeather]="weatherData[i]?.condition" [textWeather]="weatherData[i]?.text" [textRoute]="route.attributes.text"
           [iconDirection]="route.attributes.maneuverType">
