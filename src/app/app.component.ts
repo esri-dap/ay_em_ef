@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Platform, ToastController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { Toast } from '@ionic-native/toast/ngx';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +17,7 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    public toastCtrl: ToastController 
+    private toast: Toast 
   ) {
     this.initializeApp();
   }
@@ -39,11 +40,12 @@ export class AppComponent {
   }
 
   presentToast() {
-    let toast = this.toastCtrl.create({
-      message: "Press again to exit",
-      duration: 3000,
-      position: "middle"
-    });
-    toast.present();
+    this.toast.show(
+      `Press back again to exit App.`,
+      '2000',
+      'center')
+      .subscribe(toast => {
+          // console.log(JSON.stringify(toast));
+      });
   }
 }
