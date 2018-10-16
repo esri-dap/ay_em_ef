@@ -9,19 +9,19 @@ INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/a
 INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:1-17:12
 INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:1-17:12
 	package
-		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:98-124
+		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:102-128
 		INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml
 		INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml
 	android:versionName
-		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:70-97
+		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:74-101
 		INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml
 		INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml
 	android:hardwareAccelerated
 		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:11-45
 	xmlns:android
-		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:125-183
+		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:129-187
 	android:versionCode
-		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:46-69
+		ADDED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml:2:46-73
 		INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml
 		INJECTED from /Users/esri-dap/Sites/bmkg/mobileapps/ay_em_ef/platforms/android/app/src/main/AndroidManifest.xml
 supports-screens
