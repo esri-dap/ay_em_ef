@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 
-import { Platform, ToastController } from '@ionic/angular';
+import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Toast } from '@ionic-native/toast/ngx';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -11,13 +12,15 @@ import { Toast } from '@ionic-native/toast/ngx';
   styleUrls: [ 'app.scss' ]
 })
 export class AppComponent {
-  public counter=0;
+  lastTimeBackPress = 0;
+  timePeriodToExit = 2000;
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private toast: Toast 
+    private router: Router,
+    public toast: Toast 
   ) {
     this.initializeApp();
   }
@@ -27,15 +30,20 @@ export class AppComponent {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
-      this.platform.backButton.subscribe(() => {
-        if (this.counter == 0) {
-          this.counter++;
-          this.presentToast();
-          setTimeout(() => { this.counter = 0 }, 3000)
-        } else {
-          navigator['app'].exitApp();
-        }
-      }, 0)
+      this.platform.backButton.subscribe( () => {
+        console.log("Back");
+        
+        if (this.router.url === '/home') {
+          if (new Date().getTime() - this.lastTimeBackPress < this.timePeriodToExit) {
+              // this.platform.exitApp(); // Exit from app
+              navigator['app'].exitApp(); // work in ionic 4
+
+          } else {
+              this.presentToast();
+              this.lastTimeBackPress = new Date().getTime();
+          }
+      }
+      })
     });
   }
 
