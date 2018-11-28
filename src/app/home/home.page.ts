@@ -172,7 +172,7 @@ export class HomePage implements OnInit {
     5007874
   ];
   nowHour: number;
-  listHour: number[] = []
+  listHour: number[] = [];
 
   constructor(private esriGeocodeService: EsriGeocodeService) {}
 
@@ -585,7 +585,7 @@ export class HomePage implements OnInit {
             bmkgStringId["features"][0]["attributes"]["ID_BMKG_string"]
           )
           .toPromise();
-        parseString(weatherData, (errorParseXML, resultParseXML) => {
+        parseString(weatherData, async (errorParseXML, resultParseXML) => {
           if (errorParseXML) {
             throw errorParseXML;
           } else {
@@ -651,6 +651,40 @@ export class HomePage implements OnInit {
                 text: weatherReadable
               });
             }
+
+            try {
+              const [EsriGraphic, EsriPoint] = await loadModules([
+                "esri/Graphic",
+                "esri/geometry/Point"
+              ]);
+              var pointProp: esri.PointProperties = {
+                longitude: Number(feature.geometry.extent.center.x),
+                latitude: Number(feature.geometry.extent.center.y),
+                spatialReference: { wkid: 4326 }
+              };
+              var geometry: esri.Point = new EsriPoint(pointProp);
+              var symbol = {
+                type: "picture-marker",
+                url:
+                  "http://" +
+                  window.location.host +
+                  "/assets/icon/cuaca/" +
+                  (resultParseXML.data.area[0].hourly[0] !== ""
+                    ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                    .weather
+                    : "100") +
+                  ".png",
+                width: "35px",
+                height: "35px"
+              };
+              var graphic = new EsriGraphic({
+                geometry,
+                symbol
+              });
+              this.esriMapView.graphics.add(graphic);
+            } catch (error) {
+              console.error("Error on Adding Graphic Origin: " + error);
+            }
           }
         });
       } else {
@@ -661,7 +695,7 @@ export class HomePage implements OnInit {
       }
     });
     this.routeData = features;
-    this.getAllWeather();
+    // this.getAllWeather();
   }
 
   cardActive() {
