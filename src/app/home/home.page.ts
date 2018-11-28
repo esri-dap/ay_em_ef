@@ -172,12 +172,16 @@ export class HomePage implements OnInit {
     5007874
   ];
   nowHour: number;
+  listHour: number[] = []
 
   constructor(private esriGeocodeService: EsriGeocodeService) {}
 
   ngOnInit() {
     this.initializeMap();
     let date = new Date();
+    for (let index = 0; index < 25; index++) {
+      if (index >= date.getHours()) this.listHour.push(index);
+    }
     if (date.getHours() >= 0 && date.getHours() < 3) {
       this.nowHour = 0;
     } else if (date.getHours() >= 3 && date.getHours() < 6) {
@@ -219,12 +223,12 @@ export class HomePage implements OnInit {
         trafficProperties
       );
 
-	  try {
-		  const position = await this.geolocation.getCurrentPosition();
-		  this._center = [position.coords.longitude, position.coords.latitude];
-	  } catch (error) {
-		console.error("Error", error);
-	  }
+      try {
+        const position = await this.geolocation.getCurrentPosition();
+        this._center = [position.coords.longitude, position.coords.latitude];
+      } catch (error) {
+        console.error("Error", error);
+      }
 
       const mapViewProperties: esri.MapViewProperties = {
         container: this.mapViewEl.nativeElement,
@@ -285,8 +289,8 @@ export class HomePage implements OnInit {
                         .$.weather
                     : "100") +
                   ".png",
-                width: "60px",
-                height: "60px"
+                width: "35px",
+                height: "35px"
               };
               var attributes = {
                 Humidity:
@@ -323,7 +327,7 @@ export class HomePage implements OnInit {
                           this.nowHour
                         ].$.hu
                       : "-") +
-                    " grams per cubic meter<br> Temperature : " +
+                    " %<br> Temperature : " +
                     (resultParseXML.data.area[0].hourly[0]
                       ? resultParseXML.data.area[0].hourly[0].param[
                           this.nowHour
@@ -357,10 +361,9 @@ export class HomePage implements OnInit {
   }
 
   queryStreet(input, type) {
-	if (input.target.value == "" || input.target.value.length == 0){
-		console.log("Masuk null")
-		this.isSearchingAddress = null
-	}
+    if (input.target.value == "" || input.target.value.length == 0) {
+      this.isSearchingAddress = null;
+    }
     if (input.target.value.indexOf(",") == -1) {
       this.isSearchingAddress = type;
       this.esriGeocodeService
@@ -379,19 +382,40 @@ export class HomePage implements OnInit {
   }
 
   queryTravelHour(input) {
-    if (input.target.value.hour.value >= 0 && input.target.value.hour.value < 3) {
+    if (
+      input.target.value.hour.value >= 0 &&
+      input.target.value.hour.value < 3
+    ) {
       this.timeInput = 0;
-    } else if (input.target.value.hour.value >= 3 && input.target.value.hour.value < 6) {
+    } else if (
+      input.target.value.hour.value >= 3 &&
+      input.target.value.hour.value < 6
+    ) {
       this.timeInput = 1;
-    } else if (input.target.value.hour.value >= 6 && input.target.value.hour.value < 9) {
+    } else if (
+      input.target.value.hour.value >= 6 &&
+      input.target.value.hour.value < 9
+    ) {
       this.timeInput = 2;
-    } else if (input.target.value.hour.value >= 9 && input.target.value.hour.value < 12) {
+    } else if (
+      input.target.value.hour.value >= 9 &&
+      input.target.value.hour.value < 12
+    ) {
       this.timeInput = 3;
-    } else if (input.target.value.hour.value >= 12 && input.target.value.hour.value < 15) {
+    } else if (
+      input.target.value.hour.value >= 12 &&
+      input.target.value.hour.value < 15
+    ) {
       this.timeInput = 4;
-    } else if (input.target.value.hour.value >= 15 && input.target.value.hour.value < 18) {
+    } else if (
+      input.target.value.hour.value >= 15 &&
+      input.target.value.hour.value < 18
+    ) {
       this.timeInput = 5;
-    } else if (input.target.value.hour.value >= 18 && input.target.value.hour.value < 24) {
+    } else if (
+      input.target.value.hour.value >= 18 &&
+      input.target.value.hour.value < 24
+    ) {
       this.timeInput = 6;
     } else {
       this.timeInput = -1;
@@ -554,7 +578,7 @@ export class HomePage implements OnInit {
       var bmkgStringId = await this.esriGeocodeService
         .getBMKGStringId(requestString)
         .toPromise();
-      var weatherReadable = "Cuaca tidak ditemukan";
+      var weatherReadable = "";
       if (bmkgStringId["features"].length > 0) {
         let weatherData = await this.esriGeocodeService
           .getWeatherData(
@@ -567,7 +591,7 @@ export class HomePage implements OnInit {
           } else {
             if (resultParseXML.data.data !== undefined) {
               this.weatherData.push({
-                condition: "100",
+                condition: null,
                 text: weatherReadable
               });
             } else {

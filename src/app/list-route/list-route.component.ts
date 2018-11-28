@@ -25,10 +25,12 @@ export class ListRouteComponent implements OnInit {
     return this._textWeather;
   }
 
-  public _conditionWeather: string = "./../../assets/icon/cuaca/10-pm.png";
+  public _conditionWeather: string = null;
   @Input()
   set conditionWeather(conditionWeather: string) {
-    this._conditionWeather = "./../../assets/icon/cuaca/"+conditionWeather+".png";
+    if(conditionWeather){
+      this._conditionWeather = "./../../assets/icon/cuaca/"+conditionWeather+".png";
+    }
   }
   get conditionWeather(): string {
     return this._conditionWeather;

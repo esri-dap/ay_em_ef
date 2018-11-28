@@ -46,7 +46,7 @@
             </g>
           </svg>
         </ion-label>
-        <ion-datetime placeholder="Time" displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="0" (ionChange)="queryTravelHour($event)"
+        <ion-datetime placeholder="Time" displayFormat="HH:mm" pickerFormat="HH:mm" minuteValues="0" [hourValues]="listHour" (ionChange)="queryTravelHour($event)"
           (click)="cardActive()"></ion-datetime>
       </ion-item>
       <br />

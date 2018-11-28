@@ -20,7 +20,7 @@
 <ion-card>
     <ion-item>
         <ion-avatar slot="start">
-          <img [src]="_conditionWeather"/>
+          <img [src]="_conditionWeather" *ngIf="_conditionWeather"/>
         </ion-avatar>
         <ion-avatar slot="end">
           <img [src]="_iconDirection"/>
