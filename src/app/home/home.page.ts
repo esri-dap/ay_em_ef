@@ -178,27 +178,8 @@ export class HomePage implements OnInit {
 
   ngOnInit() {
     this.initializeMap();
-    let date = new Date();
-    for (let index = 0; index < 25; index++) {
-      if (index >= date.getHours()) this.listHour.push(index);
-    }
-    if (date.getHours() >= 0 && date.getHours() < 3) {
-      this.nowHour = 0;
-    } else if (date.getHours() >= 3 && date.getHours() < 6) {
-      this.nowHour = 1;
-    } else if (date.getHours() >= 6 && date.getHours() < 9) {
-      this.nowHour = 2;
-    } else if (date.getHours() >= 9 && date.getHours() < 12) {
-      this.nowHour = 3;
-    } else if (date.getHours() >= 12 && date.getHours() < 15) {
-      this.nowHour = 4;
-    } else if (date.getHours() >= 15 && date.getHours() < 18) {
-      this.nowHour = 5;
-    } else if (date.getHours() >= 18 && date.getHours() < 21) {
-      this.nowHour = 6;
-    } else {
-      this.nowHour = 0;
-    }
+    this.getPredictionHours();
+    this.getNowHours();
   }
 
   async initializeMap() {
@@ -238,189 +219,18 @@ export class HomePage implements OnInit {
         popup: {
           dockEnabled: true,
           dockOptions: {
-            // Disables the dock button from the popup
             buttonEnabled: false,
-            // Ignore the default sizes that trigger responsive docking
             breakpoint: false,
             position: "top-right"
           }
         }
       };
-
       map.add(traffic);
       this.esriMapView = await new EsriMapView(mapViewProperties);
       this.getAllWeather();
     } catch (error) {
       console.error("Error on Initializing Map: " + error);
     }
-  }
-
-  async getAllWeather() {
-    try {
-      const [EsriGraphic, EsriPoint] = await loadModules([
-        "esri/Graphic",
-        "esri/geometry/Point"
-      ]);
-      this.listKabupaten.forEach(kabupaten => {
-        this.esriGeocodeService
-          .getWeatherData(kabupaten)
-          .toPromise()
-          .then(res => {
-            parseString(res, (errorParseXML, resultParseXML) => {
-              if (errorParseXML) {
-                throw "Gagal parse XML";
-              }
-              var x = Number(resultParseXML.data.area[0].$.lat);
-              var y = Number(resultParseXML.data.area[0].$.lon);
-              var pointProp: esri.PointProperties = {
-                longitude: y,
-                latitude: x,
-                spatialReference: { wkid: 4326 }
-              };
-              var geometry: esri.Point = new EsriPoint(pointProp);
-              var symbol = {
-                type: "picture-marker",
-                url:
-                  "http://" +
-                  window.location.host +
-                  "/assets/icon/cuaca/" +
-                  (resultParseXML.data.area[0].hourly[0] !== ""
-                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
-                        .$.weather
-                    : "100") +
-                  ".png",
-                width: "35px",
-                height: "35px"
-              };
-              var attributes = {
-                Humidity:
-                  (resultParseXML.data.area[0].hourly[0] !== ""
-                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
-                        .$.hu
-                    : "Not found") + " grams per cubic meter",
-                Temperature:
-                  (resultParseXML.data.area[0].hourly[0] !== ""
-                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
-                        .$.t_c
-                    : "Not found") + " celcius",
-                "Wind Direction":
-                  resultParseXML.data.area[0].hourly[0] !== ""
-                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
-                        .$.wd_card
-                    : "Not found",
-                "Wind Speed":
-                  (resultParseXML.data.area[0].hourly[0] !== ""
-                    ? resultParseXML.data.area[0].hourly[0].param[this.nowHour]
-                        .$.ws_kph
-                    : "Not found") + " kph"
-              };
-              var graphic = new EsriGraphic({
-                geometry,
-                symbol,
-                attributes,
-                popupTemplate: {
-                  title: resultParseXML.data.area[0].$.kec,
-                  content:
-                    "Humadity : " +
-                    (resultParseXML.data.area[0].hourly[0]
-                      ? resultParseXML.data.area[0].hourly[0].param[
-                          this.nowHour
-                        ].$.hu
-                      : "-") +
-                    " %<br> Temperature : " +
-                    (resultParseXML.data.area[0].hourly[0]
-                      ? resultParseXML.data.area[0].hourly[0].param[
-                          this.nowHour
-                        ].$.t_c
-                      : "-") +
-                    " celcius<br> Wind Direction : " +
-                    (resultParseXML.data.area[0].hourly[0]
-                      ? resultParseXML.data.area[0].hourly[0].param[
-                          this.nowHour
-                        ].$.wd_card
-                      : "-") +
-                    "<br>Wind Speed : " +
-                    (resultParseXML.data.area[0].hourly[0]
-                      ? resultParseXML.data.area[0].hourly[0].param[
-                          this.nowHour
-                        ].$.ws_kph
-                      : "-") +
-                    " kph"
-                }
-              });
-              this.esriMapView.graphics.add(graphic);
-            });
-          })
-          .catch(err => {
-            console.error("Error", err);
-          });
-      });
-    } catch (err) {
-      console.error("Error", err);
-    }
-  }
-
-  queryStreet(input, type) {
-    if (input.target.value == "" || input.target.value.length == 0) {
-      this.isSearchingAddress = null;
-    }
-    if (input.target.value.indexOf(",") == -1) {
-      this.isSearchingAddress = type;
-      this.esriGeocodeService
-        .getSuggestion(input.target.value, this.latitude, this.longitude)
-        .subscribe(
-          res => {
-            type == "origin"
-              ? (this.listOriginLocationSuggestion = res["suggestions"])
-              : (this.listDestinationLocationSuggestion = res["suggestions"]);
-          },
-          error => {
-            console.error(error);
-          }
-        );
-    }
-  }
-
-  queryTravelHour(input) {
-    if (
-      input.target.value.hour.value >= 0 &&
-      input.target.value.hour.value < 3
-    ) {
-      this.timeInput = 0;
-    } else if (
-      input.target.value.hour.value >= 3 &&
-      input.target.value.hour.value < 6
-    ) {
-      this.timeInput = 1;
-    } else if (
-      input.target.value.hour.value >= 6 &&
-      input.target.value.hour.value < 9
-    ) {
-      this.timeInput = 2;
-    } else if (
-      input.target.value.hour.value >= 9 &&
-      input.target.value.hour.value < 12
-    ) {
-      this.timeInput = 3;
-    } else if (
-      input.target.value.hour.value >= 12 &&
-      input.target.value.hour.value < 15
-    ) {
-      this.timeInput = 4;
-    } else if (
-      input.target.value.hour.value >= 15 &&
-      input.target.value.hour.value < 18
-    ) {
-      this.timeInput = 5;
-    } else if (
-      input.target.value.hour.value >= 18 &&
-      input.target.value.hour.value < 24
-    ) {
-      this.timeInput = 6;
-    } else {
-      this.timeInput = -1;
-    }
-    this.cardDeactive();
   }
 
   selectAddress(input, type) {
@@ -450,119 +260,6 @@ export class HomePage implements OnInit {
         console.error(error);
       }
     );
-  }
-
-  async drawPoint(pointRefs: Array<number>, type) {
-    try {
-      const [EsriGraphic, EsriPoint] = await loadModules([
-        "esri/Graphic",
-        "esri/geometry/Point"
-      ]);
-      if (type == "origin") {
-        const pointOriginProperties: esri.PointProperties = {
-          y: pointRefs[0],
-          x: pointRefs[1],
-          spatialReference: { wkid: 4326 }
-        };
-
-        const pointOrigin: esri.Point = new EsriPoint(pointOriginProperties);
-
-        const graphicOriginProperties: esri.GraphicProperties = {
-          symbol: {
-            type: "simple-marker",
-            color: "white",
-            size: "12px"
-          },
-          geometry: pointOrigin
-        };
-
-        const graphicOrigin: esri.Graphic = new EsriGraphic(
-          graphicOriginProperties
-        );
-
-        this.esriMapView.graphics.add(graphicOrigin);
-        this.esriMapView.goTo([pointRefs[1], pointRefs[0]]);
-      } else {
-        const pointDestinationProperties: esri.PointProperties = {
-          y: pointRefs[0],
-          x: pointRefs[1],
-          spatialReference: { wkid: 4326 }
-        };
-
-        const pointDestination: esri.Point = new EsriPoint(
-          pointDestinationProperties
-        );
-
-        const graphicDestinationProperties: esri.GraphicProperties = {
-          symbol: {
-            type: "simple-marker",
-            color: "black",
-            size: "12px"
-          },
-          geometry: pointDestination
-        };
-
-        const graphicDestination: esri.Graphic = new EsriGraphic(
-          graphicDestinationProperties
-        );
-
-        this.esriMapView.graphics.add(graphicDestination);
-      }
-      this.cardDeactive();
-    } catch (error) {
-      console.error("Error on Adding Graphic Origin: " + error);
-    }
-  }
-
-  async getRoute() {
-    this.titleController = "Route Information";
-    this.iconController = "arrow-back";
-    this.hasResult = true;
-    try {
-      const [
-        EsriRouteTask,
-        EsriRouteParameters,
-        EsriFeatureSet
-      ] = await loadModules([
-        "esri/tasks/RouteTask",
-        "esri/tasks/support/RouteParameters",
-        "esri/tasks/support/FeatureSet"
-      ]);
-      var routeParamsProperties: esri.RouteParametersProperties = {
-        stops: new EsriFeatureSet({
-          features: this.esriMapView.graphics
-        }),
-        returnDirections: true,
-        directionsLengthUnits: "kilometers",
-        directionsLanguage: "id"
-      };
-
-      var routeTaskProperties: esri.RouteTaskProperties = {
-        url:
-          "https://utility.arcgis.com/usrsvcs/appservices/xeri2whs8fI3DbNH/rest/services/World/Route/NAServer/Route_World/solve"
-      };
-
-      var routeParams: esri.RouteParameters = new EsriRouteParameters(
-        routeParamsProperties
-      );
-      var routeTask: esri.RouteTask = new EsriRouteTask(routeTaskProperties);
-
-      routeTask.solve(routeParams).then(data => {
-        data["routeResults"].forEach(result => {
-          result.route.symbol = {
-            type: "simple-line",
-            color: [5, 150, 255, 0.7],
-            width: 3
-          };
-          this.esriMapView.graphics.add(result.route);
-          this.esriMapView.extent =
-            data["routeResults"][0].route.geometry.extent;
-        });
-        this.showDirection(data);
-      });
-    } catch (error) {
-      console.error("Error", error);
-    }
   }
 
   async showDirection(data: any) {
@@ -651,40 +348,26 @@ export class HomePage implements OnInit {
                 text: weatherReadable
               });
             }
-
-            try {
-              const [EsriGraphic, EsriPoint] = await loadModules([
-                "esri/Graphic",
-                "esri/geometry/Point"
-              ]);
-              var pointProp: esri.PointProperties = {
-                longitude: Number(feature.geometry.extent.center.x),
-                latitude: Number(feature.geometry.extent.center.y),
-                spatialReference: { wkid: 4326 }
-              };
-              var geometry: esri.Point = new EsriPoint(pointProp);
-              var symbol = {
-                type: "picture-marker",
-                url:
-                  "http://" +
-                  window.location.host +
-                  "/assets/icon/cuaca/" +
-                  (resultParseXML.data.area[0].hourly[0] !== ""
-                    ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
-                    .weather
-                    : "100") +
-                  ".png",
-                width: "35px",
-                height: "35px"
-              };
-              var graphic = new EsriGraphic({
-                geometry,
-                symbol
-              });
-              this.esriMapView.graphics.add(graphic);
-            } catch (error) {
-              console.error("Error on Adding Graphic Origin: " + error);
-            }
+            this.drawWeatherGraphic(
+              feature.geometry.extent.center.x,
+              feature.geometry.extent.center.y,
+              resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.weather
+                  : null,
+                resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.hu
+                  : "Not found",
+                resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.t_c
+                  : "Not found",
+                resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.wd_card
+                  : "Not found",
+                resultParseXML.data.area[0].hourly[0]
+                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.ws_kph
+                  : "-",
+              resultParseXML.data.area[0].$.kec
+            );
           }
         });
       } else {
@@ -695,7 +378,337 @@ export class HomePage implements OnInit {
       }
     });
     this.routeData = features;
-    // this.getAllWeather();
+  }
+
+  async drawPoint(pointRefs: Array<number>, type) {
+    try {
+      const [EsriGraphic, EsriPoint] = await loadModules([
+        "esri/Graphic",
+        "esri/geometry/Point"
+      ]);
+      if (type == "origin") {
+        const pointOriginProperties: esri.PointProperties = {
+          y: pointRefs[0],
+          x: pointRefs[1],
+          spatialReference: { wkid: 4326 }
+        };
+
+        const pointOrigin: esri.Point = new EsriPoint(pointOriginProperties);
+
+        const graphicOriginProperties: esri.GraphicProperties = {
+          symbol: {
+            type: "simple-marker",
+            color: "white",
+            size: "12px"
+          },
+          geometry: pointOrigin
+        };
+
+        const graphicOrigin: esri.Graphic = new EsriGraphic(
+          graphicOriginProperties
+        );
+
+        this.esriMapView.graphics.add(graphicOrigin);
+        this.esriMapView.goTo([pointRefs[1], pointRefs[0]]);
+      } else {
+        const pointDestinationProperties: esri.PointProperties = {
+          y: pointRefs[0],
+          x: pointRefs[1],
+          spatialReference: { wkid: 4326 }
+        };
+
+        const pointDestination: esri.Point = new EsriPoint(
+          pointDestinationProperties
+        );
+
+        const graphicDestinationProperties: esri.GraphicProperties = {
+          symbol: {
+            type: "simple-marker",
+            color: "black",
+            size: "12px"
+          },
+          geometry: pointDestination
+        };
+
+        const graphicDestination: esri.Graphic = new EsriGraphic(
+          graphicDestinationProperties
+        );
+
+        this.esriMapView.graphics.add(graphicDestination);
+      }
+      this.cardDeactive();
+    } catch (error) {
+      console.error("Error on Adding Graphic Origin: " + error);
+    }
+  }
+
+  async drawWeatherGraphic(
+    longitude: number,
+    latitude: number,
+    weather: string,
+    humadity: string,
+    temperature: string,
+    winddir: string,
+    windspeed: string,
+    title: string
+  ) {
+    if (weather) {
+      try {
+        const [EsriGraphic, EsriPoint] = await loadModules([
+          "esri/Graphic",
+          "esri/geometry/Point"
+        ]);
+        var pointProp: esri.PointProperties = {
+          longitude: longitude,
+          latitude: latitude,
+          spatialReference: { wkid: 4326 }
+        };
+        var geometry: esri.Point = new EsriPoint(pointProp);
+        var symbol = {
+          type: "picture-marker",
+          url:
+            "http://" +
+            window.location.host +
+            "/assets/icon/cuaca/" +
+            weather +
+            ".png",
+          width: "35px",
+          height: "35px"
+        };
+        var attributes = {
+          Humidity:
+            (humadity !== "" ? humadity : "Not found") +
+            " grams per cubic meter",
+          Temperature:
+            (temperature !== "" ? temperature : "Not found") + " celcius",
+          "Wind Direction": winddir !== "" ? winddir : "Not found",
+          "Wind Speed": (windspeed !== "" ? windspeed : "Not found") + " kph"
+        };
+        var graphic = new EsriGraphic({
+          geometry,
+          symbol,
+          attributes,
+          popupTemplate: {
+            title: title,
+            content:
+              "Humadity : " +
+              (humadity ? humadity : "-") +
+              " %<br> Temperature : " +
+              (temperature ? temperature : "-") +
+              " celcius<br> Wind Direction : " +
+              (winddir ? winddir : "-") +
+              "<br>Wind Speed : " +
+              (windspeed ? windspeed : "-") +
+              " kph"
+          }
+        });
+        this.esriMapView.graphics.add(graphic);
+      } catch (error) {
+        console.error("Error on Adding Graphic Origin: " + error);
+      }
+    } else {
+      console.log(
+        "http://" + window.location.host + "/assets/icon/cuaca/" + weather
+      );
+    }
+  }
+
+  queryStreet(input, type) {
+    if (input.target.value == "" || input.target.value.length == 0) {
+      this.isSearchingAddress = null;
+    }
+    if (input.target.value.indexOf(",") == -1) {
+      this.isSearchingAddress = type;
+      this.esriGeocodeService
+        .getSuggestion(input.target.value, this.latitude, this.longitude)
+        .subscribe(
+          res => {
+            type == "origin"
+              ? (this.listOriginLocationSuggestion = res["suggestions"])
+              : (this.listDestinationLocationSuggestion = res["suggestions"]);
+          },
+          error => {
+            console.error(error);
+          }
+        );
+    }
+  }
+
+  queryTravelHour(input) {
+    if (
+      input.target.value.hour.value >= 0 &&
+      input.target.value.hour.value < 3
+    ) {
+      this.timeInput = 0;
+    } else if (
+      input.target.value.hour.value >= 3 &&
+      input.target.value.hour.value < 6
+    ) {
+      this.timeInput = 1;
+    } else if (
+      input.target.value.hour.value >= 6 &&
+      input.target.value.hour.value < 9
+    ) {
+      this.timeInput = 2;
+    } else if (
+      input.target.value.hour.value >= 9 &&
+      input.target.value.hour.value < 12
+    ) {
+      this.timeInput = 3;
+    } else if (
+      input.target.value.hour.value >= 12 &&
+      input.target.value.hour.value < 15
+    ) {
+      this.timeInput = 4;
+    } else if (
+      input.target.value.hour.value >= 15 &&
+      input.target.value.hour.value < 18
+    ) {
+      this.timeInput = 5;
+    } else if (
+      input.target.value.hour.value >= 18 &&
+      input.target.value.hour.value < 24
+    ) {
+      this.timeInput = 6;
+    } else {
+      this.timeInput = -1;
+    }
+    this.cardDeactive();
+  }
+
+  async getRoute() {
+    this.titleController = "Route Information";
+    this.iconController = "arrow-back";
+    this.hasResult = true;
+    try {
+      const [
+        EsriRouteTask,
+        EsriRouteParameters,
+        EsriFeatureSet
+      ] = await loadModules([
+        "esri/tasks/RouteTask",
+        "esri/tasks/support/RouteParameters",
+        "esri/tasks/support/FeatureSet"
+      ]);
+      var routeParamsProperties: esri.RouteParametersProperties = {
+        stops: new EsriFeatureSet({
+          features: this.esriMapView.graphics
+        }),
+        returnDirections: true,
+        directionsLengthUnits: "kilometers",
+        directionsLanguage: "id"
+      };
+
+      var routeTaskProperties: esri.RouteTaskProperties = {
+        url:
+          "https://utility.arcgis.com/usrsvcs/appservices/xeri2whs8fI3DbNH/rest/services/World/Route/NAServer/Route_World/solve"
+      };
+
+      var routeParams: esri.RouteParameters = new EsriRouteParameters(
+        routeParamsProperties
+      );
+      var routeTask: esri.RouteTask = new EsriRouteTask(routeTaskProperties);
+
+      routeTask.solve(routeParams).then(data => {
+        data["routeResults"].forEach(result => {
+          result.route.symbol = {
+            type: "simple-line",
+            color: [5, 150, 255, 0.7],
+            width: 3
+          };
+          this.esriMapView.graphics.add(result.route);
+          this.esriMapView.extent =
+            data["routeResults"][0].route.geometry.extent;
+        });
+        this.showDirection(data);
+      });
+    } catch (error) {
+      console.error("Error", error);
+    }
+  }
+
+  async getAllWeather() {
+    try {
+      const [EsriGraphic, EsriPoint] = await loadModules([
+        "esri/Graphic",
+        "esri/geometry/Point"
+      ]);
+      this.listKabupaten.forEach(kabupaten => {
+        this.esriGeocodeService
+          .getWeatherData(kabupaten)
+          .toPromise()
+          .then(res => {
+            parseString(res, (errorParseXML, resultParseXML) => {
+              if (errorParseXML) {
+                throw "Gagal parse XML";
+              }
+              var x = Number(resultParseXML.data.area[0].$.lat);
+              var y = Number(resultParseXML.data.area[0].$.lon);
+              this.drawWeatherGraphic(
+                y,
+                x,
+                resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.weather
+                  : null,
+                resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.hu
+                  : "Not found",
+                resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.t_c
+                  : "Not found",
+                resultParseXML.data.area[0].hourly[0] !== ""
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.wd_card
+                  : "Not found",
+                resultParseXML.data.area[0].hourly[0]
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.ws_kph
+                  : "-",
+                resultParseXML.data.area[0].$.kec
+              );
+            });
+          })
+          .catch(err => {
+            console.error("Error", err);
+          });
+      });
+    } catch (err) {
+      console.error("Error", err);
+    }
+  }
+
+  getQueryStringByExtent(extent: any) {
+    let result =
+      "geometry=" +
+      encodeURI(JSON.stringify(extent.center)) +
+      "&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&outFields=ID_BMKG_string";
+    return result;
+  }
+
+  getPredictionHours() {
+    let date = new Date();
+    for (let index = 0; index < 25; index++) {
+      if (index > date.getHours()) this.listHour.push(index);
+    }
+  }
+
+  getNowHours() {
+    let date = new Date();
+    if (date.getHours() >= 0 && date.getHours() < 3) {
+      this.nowHour = 0;
+    } else if (date.getHours() >= 3 && date.getHours() < 6) {
+      this.nowHour = 1;
+    } else if (date.getHours() >= 6 && date.getHours() < 9) {
+      this.nowHour = 2;
+    } else if (date.getHours() >= 9 && date.getHours() < 12) {
+      this.nowHour = 3;
+    } else if (date.getHours() >= 12 && date.getHours() < 15) {
+      this.nowHour = 4;
+    } else if (date.getHours() >= 15 && date.getHours() < 18) {
+      this.nowHour = 5;
+    } else if (date.getHours() >= 18 && date.getHours() < 21) {
+      this.nowHour = 6;
+    } else {
+      this.nowHour = 0;
+    }
   }
 
   cardActive() {
@@ -709,14 +722,6 @@ export class HomePage implements OnInit {
     if (this.originInput && this.destinationInput && this.timeInput > -1) {
       this.getRoute();
     }
-  }
-
-  getQueryStringByExtent(extent: any) {
-    let result =
-      "geometry=" +
-      encodeURI(JSON.stringify(extent.center)) +
-      "&geometryType=esriGeometryPoint&spatialRel=esriSpatialRelIntersects&outFields=ID_BMKG_string";
-    return result;
   }
 
   resetStatus() {
