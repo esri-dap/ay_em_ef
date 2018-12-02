@@ -173,6 +173,8 @@ export class HomePage implements OnInit {
   ];
   nowHour: number;
   listHour: number[] = [];
+  historyOriginSuggestion: any = null;
+  historyDestinationSuggestion: any = null;
 
   constructor(private esriGeocodeService: EsriGeocodeService) {}
 
@@ -234,9 +236,11 @@ export class HomePage implements OnInit {
   }
 
   selectAddress(input, type) {
-    this.esriGeocodeService.getAddress(input).subscribe(
+    this.esriGeocodeService.getAddress(input.magicKey).subscribe(
       res => {
         if (type == "origin") {
+          console.log(input)
+          this.historyOriginSuggestion = input;
           this.listOriginLocationSuggestion = null;
           this.originInput = res["candidates"][0]["attributes"]["LongLabel"];
           this.xRef = res["candidates"][0]["location"]["x"];
@@ -245,6 +249,7 @@ export class HomePage implements OnInit {
           this.drawPoint(this.pointRefs, "origin");
           this.esriMapView.graphics.removeAll();
         } else {
+          this.historyDestinationSuggestion = input;
           this.listDestinationLocationSuggestion = null;
           this.destinationInput =
             res["candidates"][0]["attributes"]["LongLabel"];
@@ -352,20 +357,25 @@ export class HomePage implements OnInit {
               feature.geometry.extent.center.x,
               feature.geometry.extent.center.y,
               resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.weather
-                  : null,
-                resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.hu
-                  : "Not found",
-                resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.t_c
-                  : "Not found",
-                resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.wd_card
-                  : "Not found",
-                resultParseXML.data.area[0].hourly[0]
-                  ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$.ws_kph
-                  : "-",
+                ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                    .weather
+                : null,
+              resultParseXML.data.area[0].hourly[0] !== ""
+                ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                    .hu
+                : "Not found",
+              resultParseXML.data.area[0].hourly[0] !== ""
+                ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                    .t_c
+                : "Not found",
+              resultParseXML.data.area[0].hourly[0] !== ""
+                ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                    .wd_card
+                : "Not found",
+              resultParseXML.data.area[0].hourly[0]
+                ? resultParseXML.data.area[0].hourly[0].param[this.timeInput].$
+                    .ws_kph
+                : "-",
               resultParseXML.data.area[0].$.kec
             );
           }
@@ -517,14 +527,24 @@ export class HomePage implements OnInit {
     if (input.target.value == "" || input.target.value.length == 0) {
       this.isSearchingAddress = null;
     }
-    if (input.target.value.indexOf(",") == -1) {
+    if (input.target.value.indexOf(",") == -1 && (input.target.value !== "" || input.target.value.length !== 0)) {
       this.isSearchingAddress = type;
       this.esriGeocodeService
         .getSuggestion(input.target.value, this.latitude, this.longitude)
         .subscribe(
           res => {
             type == "origin"
-              ? (this.listOriginLocationSuggestion = res["suggestions"])
+              ? this.historyOriginSuggestion
+                ? (this.listOriginLocationSuggestion = [
+                    this.historyOriginSuggestion,
+                    ...res["suggestions"]
+                  ])
+                : (this.listOriginLocationSuggestion = res["suggestions"])
+              : this.historyDestinationSuggestion
+              ? (this.listDestinationLocationSuggestion = [
+                  this.historyDestinationSuggestion,
+                  ...res["suggestions"]
+                ])
               : (this.listDestinationLocationSuggestion = res["suggestions"]);
           },
           error => {
@@ -648,19 +668,24 @@ export class HomePage implements OnInit {
                 y,
                 x,
                 resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.weather
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$
+                      .weather
                   : null,
                 resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.hu
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$
+                      .hu
                   : "Not found",
                 resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.t_c
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$
+                      .t_c
                   : "Not found",
                 resultParseXML.data.area[0].hourly[0] !== ""
-                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.wd_card
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$
+                      .wd_card
                   : "Not found",
                 resultParseXML.data.area[0].hourly[0]
-                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$.ws_kph
+                  ? resultParseXML.data.area[0].hourly[0].param[this.nowHour].$
+                      .ws_kph
                   : "-",
                 resultParseXML.data.area[0].$.kec
               );

@@ -14,7 +14,7 @@
       </input-with-icon-inside>
 
       <ion-list lines="none" *ngFor="let locationOrigin of listOriginLocationSuggestion">
-        <list-address [addressName]="locationOrigin.text.split(',')[0]" [addressStreet]="locationOrigin.text" (click)="selectAddress(locationOrigin.magicKey, 'origin')">
+        <list-address [addressName]="locationOrigin.text.split(',')[0]" [addressStreet]="locationOrigin.text" (click)="selectAddress(locationOrigin, 'origin')">
         </list-address>
       </ion-list>
     </ion-card-content>
@@ -26,7 +26,7 @@
 
       <ion-list lines="none" *ngFor="let locationDestination of listDestinationLocationSuggestion">
         <list-address [addressName]="locationDestination.text.split(',')[0]" [addressStreet]="locationDestination.text"
-          (click)="selectAddress(locationDestination.magicKey, 'destination')">
+          (click)="selectAddress(locationDestination, 'destination')">
         </list-address>
       </ion-list>
     </ion-card-content>
