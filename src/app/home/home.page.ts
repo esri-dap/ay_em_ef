@@ -175,6 +175,8 @@ export class HomePage implements OnInit {
   listHour: number[] = [];
   historyOriginSuggestion: any = null;
   historyDestinationSuggestion: any = null;
+  historyOriginPoint: any = null;
+  historyDestinationPoint: any = null;
 
   constructor(private esriGeocodeService: EsriGeocodeService) {}
 
@@ -239,7 +241,7 @@ export class HomePage implements OnInit {
     this.esriGeocodeService.getAddress(input.magicKey).subscribe(
       res => {
         if (type == "origin") {
-          console.log(input)
+          console.log(input);
           this.historyOriginSuggestion = input;
           this.listOriginLocationSuggestion = null;
           this.originInput = res["candidates"][0]["attributes"]["LongLabel"];
@@ -276,7 +278,7 @@ export class HomePage implements OnInit {
       var extent = this.getQueryStringByExtent(feature.geometry.extent);
       let requestString =
         "https://services2.arcgis.com/LvCBNZuwhTWWbvod/arcgis/rest/services/Kecamatan_Bali_Jkt/FeatureServer/0/query?f=json&" +
-        extent; //+;
+        extent;
       var bmkgStringId = await this.esriGeocodeService
         .getBMKGStringId(requestString)
         .toPromise();
@@ -418,6 +420,7 @@ export class HomePage implements OnInit {
           graphicOriginProperties
         );
 
+        this.historyOriginPoint = graphicOrigin;
         this.esriMapView.graphics.add(graphicOrigin);
         this.esriMapView.goTo([pointRefs[1], pointRefs[0]]);
       } else {
@@ -443,7 +446,9 @@ export class HomePage implements OnInit {
         const graphicDestination: esri.Graphic = new EsriGraphic(
           graphicDestinationProperties
         );
-
+        
+        this.esriMapView.graphics.remove(this.historyDestinationPoint)
+        this.historyDestinationPoint = graphicDestination;
         this.esriMapView.graphics.add(graphicDestination);
       }
       this.cardDeactive();
@@ -516,10 +521,6 @@ export class HomePage implements OnInit {
       } catch (error) {
         console.error("Error on Adding Graphic Origin: " + error);
       }
-    } else {
-      console.log(
-        "http://" + window.location.host + "/assets/icon/cuaca/" + weather
-      );
     }
   }
 
@@ -527,7 +528,10 @@ export class HomePage implements OnInit {
     if (input.target.value == "" || input.target.value.length == 0) {
       this.isSearchingAddress = null;
     }
-    if (input.target.value.indexOf(",") == -1 && (input.target.value !== "" || input.target.value.length !== 0)) {
+    if (
+      input.target.value.indexOf(",") == -1 &&
+      (input.target.value !== "" || input.target.value.length !== 0)
+    ) {
       this.isSearchingAddress = type;
       this.esriGeocodeService
         .getSuggestion(input.target.value, this.latitude, this.longitude)
@@ -754,13 +758,13 @@ export class HomePage implements OnInit {
     this.hasResult = false;
     this.listOriginLocationSuggestion = null;
     this.listDestinationLocationSuggestion = null;
-    this.originInput = null;
-    this.destinationInput = null;
     this.routeData = null;
     this.timeInput = -1;
     this.weatherData = [];
     this.titleController = "Weather & Traffic";
     this.iconController = "list";
     this.esriMapView.graphics.removeAll();
+    this.esriMapView.graphics.add(this.historyOriginPoint);
+    this.esriMapView.graphics.add(this.historyDestinationPoint);
   }
 }
