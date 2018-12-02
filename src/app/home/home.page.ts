@@ -5,6 +5,7 @@ import { parseString } from "xml2js";
 import esri = __esri;
 
 import { Plugins } from "@capacitor/core";
+import { AngularDelegate } from "@ionic/angular";
 
 @Component({
   selector: "app-home",
@@ -177,6 +178,10 @@ export class HomePage implements OnInit {
   historyDestinationSuggestion: any = null;
   historyOriginPoint: any = null;
   historyDestinationPoint: any = null;
+  trafficLayer: any = null;
+  hasTrafficLayer: boolean = false;
+  weatherGraphic: any = [];
+  hasWeatherGraphic: boolean = false;
 
   constructor(private esriGeocodeService: EsriGeocodeService) {}
 
@@ -188,10 +193,16 @@ export class HomePage implements OnInit {
 
   async initializeMap() {
     try {
-      const [EsriMap, EsriMapView, EsriMapImageLayer] = await loadModules([
+      const [
+        EsriMap,
+        EsriMapView,
+        EsriMapImageLayer,
+        EsriWidgetLocate
+      ] = await loadModules([
         "esri/Map",
         "esri/views/MapView",
-        "esri/layers/MapImageLayer"
+        "esri/layers/MapImageLayer",
+        "esri/widgets/Locate"
       ]);
 
       const mapProperties: esri.MapProperties = {
@@ -204,9 +215,7 @@ export class HomePage implements OnInit {
       };
 
       const map: esri.Map = new EsriMap(mapProperties);
-      const traffic: esri.MapImageLayer = new EsriMapImageLayer(
-        trafficProperties
-      );
+      this.trafficLayer = new EsriMapImageLayer(trafficProperties);
 
       try {
         const position = await this.geolocation.getCurrentPosition();
@@ -229,8 +238,18 @@ export class HomePage implements OnInit {
           }
         }
       };
-      map.add(traffic);
+      map.add(this.trafficLayer);
+      this.hasTrafficLayer = true;
       this.esriMapView = await new EsriMapView(mapViewProperties);
+      var locate = new EsriWidgetLocate({
+        view: this.esriMapView,
+        graphic: null
+      });
+      this.esriMapView.when(() => {
+        this.createTrafficToggle();
+        this.createWeatherToggle();
+        this.esriMapView.ui.add(locate, "top-left")
+      });
       this.getAllWeather();
     } catch (error) {
       console.error("Error on Initializing Map: " + error);
@@ -241,7 +260,6 @@ export class HomePage implements OnInit {
     this.esriGeocodeService.getAddress(input.magicKey).subscribe(
       res => {
         if (type == "origin") {
-          console.log(input);
           this.historyOriginSuggestion = input;
           this.listOriginLocationSuggestion = null;
           this.originInput = res["candidates"][0]["attributes"]["LongLabel"];
@@ -446,8 +464,8 @@ export class HomePage implements OnInit {
         const graphicDestination: esri.Graphic = new EsriGraphic(
           graphicDestinationProperties
         );
-        
-        this.esriMapView.graphics.remove(this.historyDestinationPoint)
+
+        this.esriMapView.graphics.remove(this.historyDestinationPoint);
         this.historyDestinationPoint = graphicDestination;
         this.esriMapView.graphics.add(graphicDestination);
       }
@@ -517,7 +535,9 @@ export class HomePage implements OnInit {
               " kph"
           }
         });
+        this.weatherGraphic.push(graphic);
         this.esriMapView.graphics.add(graphic);
+        this.hasWeatherGraphic = true;
       } catch (error) {
         console.error("Error on Adding Graphic Origin: " + error);
       }
@@ -753,6 +773,26 @@ export class HomePage implements OnInit {
     }
   }
 
+  toggleTraffic(event: Event) {
+    if (this.hasTrafficLayer) {
+      this.esriMapView.map.remove(this.trafficLayer);
+      this.hasTrafficLayer = false;
+    } else {
+      this.esriMapView.map.add(this.trafficLayer);
+      this.trafficLayer = true;
+    }
+  }
+
+  toggleWeather() {
+    if (this.hasWeatherGraphic) {
+      this.esriMapView.graphics.removeMany(this.weatherGraphic);
+      this.hasWeatherGraphic = false;
+    } else {
+      this.esriMapView.graphics.addMany(this.weatherGraphic);
+      this.hasWeatherGraphic = true;
+    }
+  }
+
   resetStatus() {
     this.isSearchingAddress = null;
     this.hasResult = false;
@@ -766,5 +806,21 @@ export class HomePage implements OnInit {
     this.esriMapView.graphics.removeAll();
     this.esriMapView.graphics.add(this.historyOriginPoint);
     this.esriMapView.graphics.add(this.historyDestinationPoint);
+  }
+
+  createTrafficToggle(): void {
+    var trafficToggle = document.createElement("button");
+    trafficToggle.setAttribute("class", "btn");
+    trafficToggle.addEventListener("click", this.toggleTraffic.bind(this));
+    trafficToggle.innerHTML = "Traffic Toggle";
+    this.esriMapView.ui.add(trafficToggle, "top-right");
+  }
+
+  createWeatherToggle(): void {
+    var weatherToggle = document.createElement("button");
+    weatherToggle.setAttribute("class", "btn");
+    weatherToggle.addEventListener("click", this.toggleWeather.bind(this));
+    weatherToggle.innerHTML = "Weather Toggle";
+    this.esriMapView.ui.add(weatherToggle, "top-right");
   }
 }
